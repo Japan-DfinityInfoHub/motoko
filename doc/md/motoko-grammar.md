@@ -2,6 +2,10 @@
 
 この章では、Motoko の具体的なシンタックスや文法について述べています。 以下の詳述はツールによって自動生成されています。
 
+```bnf file=./examples/grammar.txt
+
+```
+
 <!--
 
 # Motoko grammar
