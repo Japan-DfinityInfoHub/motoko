@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>md/modules-and-imports.md</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">md/modules-and-imports.md</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#モジュールとインポート">モジュールとインポート</a>
+<ul>
+<li><a href="#motoko-標準ライブラリからのインポート">Motoko
+標準ライブラリからのインポート</a></li>
+<li><a
+href="#ローカルファイルのインポート">ローカルファイルのインポート</a></li>
+<li><a
+href="#他のパッケージやディレクトリからのインポート">他のパッケージやディレクトリからのインポート</a></li>
+<li><a href="#actor-クラスのインポート">Actor
+クラスのインポート</a></li>
+<li><a href="#他の-canister-スマートコントラクトからのインポート">他の
+Canister スマートコントラクトからのインポート</a></li>
+<li><a
+href="#インポートモジュールの命名">インポートモジュールの命名</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="モジュールとインポート">モジュールとインポート</h1>
+<p>この章では、<code>module</code> と <code>import</code>
+キーワードを使用するさまざまなシナリオの例を紹介します。</p>
+<p>これらのキーワードがどのように使われるかを知るために、いくつかのサンプルコードを見てみましょう。</p>
+<h2 id="motoko-標準ライブラリからのインポート">Motoko
+標準ライブラリからのインポート</h2>
+<p>最も一般的なインポートの使用場面の 1
+つは、このガイドの例やサンプルリポジトリの Motoko
+プロジェクトやチュートリアルで見られるように、Motoko
+標準ライブラリからモジュールをインポートすることです。
+標準ライブラリからモジュールをインポートすることで、同じようなものを最初から書くのではなく、それらのモジュールで定義された値、関数、型を再利用することができます。</p>
+<p>以下の 2 行は <code>Array</code> と <code>Result</code>
+モジュールから関数をインポートしています。</p>
+<pre class="motoko"><code>import Array &quot;mo:base/Array&quot;;
+import Result &quot;mo:base/Result&quot;;</code></pre>
+<p>インポート宣言には、Motoko モジュールであることを示す
+<code>mo:</code> という接頭辞が含まれており、宣言には <code>.mo</code>
+というファイルの拡張子がないことに注意してください。</p>
+<p>上記の例では、識別子を使ってモジュールを一括してインポートしていますが、
+以下のようなオブジェクトパターンの構文を用いることで、サブセットをモジュールから選択的にインポートすることもできます。</p>
+<pre class="motoko"><code>import { map; find; foldLeft = fold } = &quot;mo:base/Array&quot;;</code></pre>
+<p>この例では、関数 <code>map</code> と <code>find</code>
+はそのままインポートされ、関数 <code>foldLeft</code> は
+<code>fold</code> にリネームされます。</p>
+<h2 id="ローカルファイルのインポート">ローカルファイルのインポート</h2>
+<p>Motoko
+でプログラムを書くためのもう一つの一般的なアプローチは、ソースコードを異なるモジュールに分割することです。
+例えば、以下のようなモデルでアプリケーションを設計するとします。</p>
+<ul>
+<li><p>ステートを変更する Actor と関数を格納する <code>main.mo</code>
+ファイル。</p></li>
+<li><p>カスタムの型定義を格納する <code>types.mo</code>
+ファイル。</p></li>
+<li><p>Actor の外で動作する関数を格納する <code>utils.mo</code>
+ファイル。</p></li>
+</ul>
+<p>このシナリオでは、3
+つのファイルを同じディレクトリに置き、ローカルインポートを使って、必要な場所で関数を利用できるようにすると良いでしょう。</p>
+<p>例えば <code>main.mo</code>
+には、同じディレクトリにあるモジュールを参照するために、以下のような行が含まれています。</p>
+<pre class="motoko"><code>import Types &quot;types&quot;;
+import Utils &quot;utils&quot;;</code></pre>
+<p>これらの行は Motoko
+ライブラリではなくローカルプロジェクトのモジュールをインポートしているので、これらのインポート宣言は
+<code>mo:</code> 接頭辞を使用しません。</p>
+<p>この例では、<code>types.mo</code> と <code>utils.mo</code>
+のファイルが <code>main.mo</code>
+ファイルと同じディレクトリに置かれています。
+繰り返しになりますが、インポートは <code>.mo</code>
+接頭辞を使用しません。</p>
+<h2
+id="他のパッケージやディレクトリからのインポート">他のパッケージやディレクトリからのインポート</h2>
+<p>他のパッケージやローカルディレクトリ以外のディレクトリからモジュールをインポートすることもできます。</p>
+<p>例えば、以下は依存関係にある <code>redraw</code>
+パッケージからモジュールをインポートしている例です。</p>
+<pre class="motoko"><code>import Render &quot;mo:redraw/Render&quot;;
+import Mono5x5 &quot;mo:redraw/glyph/Mono5x5&quot;;</code></pre>
+<p>プロジェクトの依存関係は、パッケージマネージャである Vessel
+を使うか、プロジェクトの設定ファイルである <code>dfx.json</code>
+で定義することができます。</p>
+<p>この例では、<code>Render</code> モジュールは <code>redraw</code>
+パッケージのソースコードのデフォルトの場所にあり、<code>Mono5x5</code>
+モジュールは <code>redraw</code> パッケージのサブディレクトリである
+<code>glyph</code> に入っています。</p>
+<h2 id="actor-クラスのインポート">Actor クラスのインポート</h2>
+<p>モジュールのインポートは、通常ローカルの関数や値のライブラリをインポートするために使用されますが、Actor
+クラスをインポートするために使用することもできます。
+インポートされたファイルが名前付きの Actor
+クラスで構成されている場合、インポートされたフィールドのクライアントから
+Actor クラスを含むモジュールを見ることができます。</p>
+<p>モジュールには 2 つのコンポーネントがあり、両方とも Actor
+クラスの名前をとって命名されています。</p>
+<ul>
+<li><p>クラスのインタフェースを記述する型定義。</p></li>
+<li><p>クラスのパラメータを引数に取り、非同期でクラスの新しいインスタンスを返す非同期関数。</p></li>
+</ul>
+<p>例えば、Motoko の Actor は <a
+href="actors-async.md#actor-classes-generalize-actors">Actor と async
+データ</a> で述べた <code>Counter</code>
+クラスを次のようにインポートしてインスタンス化することができます。</p>
+<p><code>Counters.mo</code>:</p>
+<pre class="motoko"><code></code></pre>
+<p><code>CountToTen.mo</code>:</p>
+<pre class="motoko"><code></code></pre>
+<p><code>Counters.Counter(1)</code>
+の呼び出しは、ネットワーク上に新しいカウンタをインストールします。インストールは非同期なので、呼び出し元は結果を
+<code>await</code> しなければなりません。</p>
+<p>型注釈 <code>: Counters.Counter</code> はここでは冗長です。Actor
+クラスの型が必要なときに利用できることを示す目的で記載しています。</p>
+<h2 id="他の-canister-スマートコントラクトからのインポート">他の
+Canister スマートコントラクトからのインポート</h2>
+<p>上記の Motoko モジュールをインポートする例に加え、<code>mo:</code>
+の代わりに <code>canister:</code> という接頭辞を用いることで、Canister
+スマートコントラクトから Actor とその共有（shared）関数
+をインポートすることもできます。</p>
+<p>:::note</p>
+<p>Motoko ライブラリとは異なり、インポートされた Canister は、その
+Canister スマートコントラクト用の Candid インターフェースを発行する他の
+Internet Computer 言語（例えば Rust）で実装することが可能です。それは
+Motoko の古いバージョンや新しいバージョンである可能性もあります。</p>
+<p>:::</p>
+<p>例えば、以下の 3 つの Canister
+を生成するプロジェクトがあるとします。</p>
+<ul>
+<li><p>BigMap（Rust で実装）</p></li>
+<li><p>Connectd（Motoko で実装）</p></li>
+<li><p>LinkedUp（Motoko で実装）</p></li>
+</ul>
+<p>これら 3 つの Canister はプロジェクトの設定ファイルである
+<code>dfx.json</code> で宣言され、<code>dfx build</code>
+を実行することでコンパイルされます。</p>
+<p>次に、<code>BigMap</code> と <code>Connectd</code> Canister を Motoko
+LinkedUp Actor 内の Actor
+として以下のようにインポートすることができます。</p>
+<pre class="motoko"><code>import BigMap &quot;canister:BigMap&quot;;
+import Connectd &quot;canister:connectd&quot;;</code></pre>
+<p>Canister をインポートするとき、インポートされた Canister の型は
+<strong>Motoko モジュール</strong> ではなく <strong>Motoko
+Actor</strong> に対応することに注意することが重要です。
+この区別は、データ構造がどのように型付けされるかに影響を与えます。</p>
+<p>インポートされた Canister の Actor では、型は Motoko
+からではなく、Canister 用の Candid ファイル（<em>プロジェクト名</em>.did
+ファイル）から与えられます。</p>
+<p>Motoko の Actor 型から Candid
+のサービス（service）型への変換は、ほとんどの場合には 1 対 1
+対応ですが、同じ Candid 型にマッピングするいくつかの異なる Motoko
+型が存在します。例えば、Motoko の <code>Nat32</code> と
+<code>Char</code> 型は両方とも Candid の <code>nat32</code>
+型としてエクスポートされますが、<code>nat32</code> は <code>Char</code>
+ではなく Motoko の <code>Nat32</code>
+として標準的（canonical）にインポートされます。</p>
+<p>したがって、インポートされた Canister
+関数の型は、それを実装している元の Motoko
+コードの型と異なる場合があります。 例えば、Motoko の関数の実装で
+<code>shared Nat32 -&gt; async Char</code>
+という型があった場合、エクスポートされた Candid 型は
+<code>(nat32) -&gt; (nat32)</code> になりますが、この Candid
+型からインポートされた Motoko
+の型は実際には（正しいのですがおそらく予想に反する）<code>shared Nat32 -&gt; async Nat32</code>
+になります。</p>
+<h2 id="インポートモジュールの命名">インポートモジュールの命名</h2>
+<p>上記の例のようにインポートモジュールをモジュール名で識別するのが最も一般的な慣習ですが、必ずしもそうする必要はありません。
+例えば、名前の衝突を避けるため、あるいは命名を簡単にするために、異なる名前を使用したい場合があります。</p>
+<p>標準ライブラリから <code>List</code>
+モジュールをインポートする際に、架空の <code>collections</code>
+パッケージの別の <code>List</code>
+ライブラリと名前が衝突しないように、異なる名前を使用する例を以下に示します。</p>
+<pre class="motoko"><code>import List &quot;mo:base/List:&quot;;
+import Sequence &quot;mo:collections/List&quot;;
+import L &quot;mo:base/List&quot;;</code></pre>
+<!--
+
+# Modules and imports
+
+This section provides examples of different scenarios for using the `module` and `import` keywords.
+
+To illustrate how these keywords are used, let’s step through some sample code.
+
+## Importing from the Motoko base library
+
+One of the most common import scenarios is one that you see illustrated in the examples in this guide, in the Motoko projects in the examples repository, and in the tutorials involves importing modules from the Motoko base library. Importing modules from the base library enables you to re-use the values, functions and types defined in those modules rather than writing similar ones from scratch.
+
+The following two lines import functions from the `Array` and `Result` modules:
+
+``` motoko
+import Array "mo:base/Array";
+import Result "mo:base/Result";
+```
+
+Notice that the import declaration includes the `mo:` prefix to identify the module as a Motoko module and that the declaration does not include the `.mo` file type extension.
+
+Above example uses an identifier pattern to import modules wholesale, but you can also selectively import a subset of symbols from a module by resorting to the object pattern syntax:
+
+``` motoko
+import { map; find; foldLeft = fold } = "mo:base/Array";
+```
+
+In this example, the functions `map` and `find` are imported unaltered, while the `foldLeft` function is renamed to `fold`.
+
+## Importing local files
+
+Another common approach to writing programs in Motoko involves splitting up the source code into different modules. For example, you might design an application to use the following model:
+
+-   a `main.mo` file to contain the actor and functions that change state.
+
+-   a `types.mo` file for all of your custom type definitions.
+
+-   a `utils.mo` file for functions that do work outside of the actor.
+
+In this scenario, you might place all three files in the same directory and use a local import to make the functions available where they are needed.
+
+For example, the `main.mo` contains the following lines to reference the modules in the same directory:
+
+``` motoko no-repl
+import Types "types";
+import Utils "utils";
+```
+
+Because these lines import modules from the local project instead of the Motoko library, these import declarations don’t use the `mo:` prefix.
+
+In this example, both the `types.mo` and `utils.mo` files are in the same directory as the `main.mo` file. Once again, import does not use the `.mo` file suffix.
+
+## Importing from another package or directory
+
+You can also import modules from other packages or from directories other than the local directory.
+
+For example, the following lines import modules from a `redraw` package that is defined as a dependency:
+
+``` motoko no-repl
+import Render "mo:redraw/Render";
+import Mono5x5 "mo:redraw/glyph/Mono5x5";
+```
+
+You can define dependencies for a project using the Vessel package manager or in the project `dfx.json` configuration file.
+
+In this example, the `Render` module is in the default location for source code in the `redraw` package and the `Mono5x5` module is in a `redraw` package subdirectory called `glyph`.
+
+## Importing actor classes
+
+While module imports are typically used to import libraries of local functions and values, they can also be used to import actor classes. When an imported file consists of a named actor class, the client of the imported field sees a module containing the actor class.
+
+This module has two components, both named after the actor class:
+
+-   a type definition, describing the interface of the class, and
+
+-   an asynchronous function, that takes the class parameters as arguments an asynchronously returns a fresh instance of the class.
+
+For example, a Motoko actor can import and instantiate the `Counter` class described in [Actors and async data](actors-async.md#actor-classes-generalize-actors) as follows:
+
+`Counters.mo`:
+
+``` motoko name=Counters file=./examples/Counters.mo
+```
+
+`CountToTen.mo`:
+
+``` motoko include=Counters file=./examples/CountToTen.mo
+```
+
+The call to `Counters.Counter(1)` installs a fresh counter on the network. Installation is asynchronous, so the caller must `await` the result.
+
+The type annotation `: Counters.Counter` is redundant here. It’s included only to illustrate that the type of the actor class is available when required.
+
+## Importing from another canister smart contract
+
+In addition to the examples above that import Motoko modules, you can also import actors (and their shared functions) from canister smart constracts by using the `canister:` prefix in place of the `mo:` prefix.
+
+:::note
+
+Unlike a Motoko library, an imported canister can be implemented in any other Internet Computer language that emits Candid interfaces for its canister smart contracts (for instance Rust). It could even be an older or newer version of Motoko.
+
+:::
+
+For example, you might have a project that produces the following three canisters:
+
+-   BigMap (implemented in Rust)
+
+-   Connectd (implemented in Motoko)
+
+-   LinkedUp (implemented in Motoko)
+
+These three canisters are declared in the project’s `dfx.json` configuration file and compiled by running `dfx build`.
+
+You can then use the following lines to import the `BigMap` and `Connectd` canisters as actors in the Motoko LinkedUp actor:
+
+``` motoko no-repl
+import BigMap "canister:BigMap";
+import Connectd "canister:connectd";
+```
+
+When importing canisters, it is important to note that the type for the imported canister corresponds to a **Motoko actor** instead of a **Motoko module**. This distinction can affect how some data structures are typed.
+
+For the imported canister actor, types are derived from the Candid file — the *project-name*.did file — for the canister rather than from Motoko itself.
+
+The translation from Motoko actor type to Candid service type is mostly, but not entirely, one-to-one, and there are some distinct Motoko types that map to the same Candid type. For example, the Motoko `Nat32` and `Char` types both exported as Candid type `nat32`, but `nat32` is canonically imported as Motoko `Nat32`, not `Char`.
+
+The type of an imported canister function, therefore, might differ from the type of the original Motoko code that implements it. For example, if the Motoko function had type `shared Nat32 -> async Char` in the implementation, its exported Candid type would be `(nat32) -> (nat32)` but the Motoko type imported from this Candid type will actually be the correct—but perhaps unexpected—type `shared Nat32 -> async Nat32`.
+
+## Naming imported modules
+
+Although the most common convention is to identify imported modules by the module name as illustrated in the examples above, there’s no requirement for you to do so. For example, you might want to use different names to avoid naming conflicts or to simplify the naming scheme.
+
+The following examples illustrate different names you might use when importing the `List` base library module, avoiding a clash with another `List` library from a fictional `collections` package.
+
+``` motoko no-repl
+import List "mo:base/List:";
+import Sequence "mo:collections/List";
+import L "mo:base/List";
+```
+
+-->
+</body>
+</html>

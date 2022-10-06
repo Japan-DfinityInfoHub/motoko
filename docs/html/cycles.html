@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>md/cycles.md</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">md/cycles.md</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#cycle-を管理する">Cycle を管理する</a>
+<ul>
+<li><a
+href="#experimentalcycles-ライブラリ"><code>ExperimentalCycles</code>
+ライブラリ</a>
+<ul>
+<li><a href="#例">例</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="cycle-を管理する">Cycle を管理する</h1>
+<p>Internet Computer の使用量は Cycle によって計測され、Cycle
+によって支払われます。 Internet Computer は Canister
+スマートコントラクトごとに Cycle の残高を保持します。 さらに、Cycle は
+Canister 間で転送することが可能です。</p>
+<p>Internet Computer を対象とする Motoko プログラムでは、各 Actor は
+Internet Computer の Canister を表し、関連する Cycle
+の残高を保持します。 Cycle の所有権は Actor 間で移動することができます。
+Cycle はメッセージ、つまり shared
+関数の呼び出しによって選択的に送受信されます。
+呼び出し元（Caller）は関数呼び出しで Cycle
+を転送することを選択でき、呼び出し先（Callee）は Cycle
+を受け入れることを選択できます。
+明示的に指示されない限り、呼び出し元からの Cycle の転送や呼び出し先の
+Cycle の受け入れは行われません。</p>
+<p>呼び出し先は、利用可能な Cycle
+の全てまたは一部を受け取るか、一切受け取らないかを選択することができます。受け取りの上限値は、Actor
+の現在の残高によって決まります。 Cycle が余った場合、残りの Cycle
+は呼び出し元に返金されます。
+呼び出しがトラップされた場合、それに付随するすべての Cycle
+は、失われることなく自動的に呼び出し元に返金されます。</p>
+<p>将来的には、Motoko が Cycle
+を用いた安全なプログラミングをサポートする専用の構文と型を採用する可能性があります。
+現在のところ、Cycle を管理するための一時的な方法を、<code>base</code>
+パッケージ内の低レベルな命令型 API である <a
+href="./base/ExperimentalCycles.md">ExperimentalCycles</a> ライブラリ
+を通して提供しています。</p>
+<p>:::note</p>
+<p>このライブラリは変更される可能性があり、Motoko
+の後のバージョンでは、Cycle
+のより高レベルなサポートに置き換えられると考えられます。</p>
+<p>:::</p>
+<h2 id="experimentalcycles-ライブラリ"><code>ExperimentalCycles</code>
+ライブラリ</h2>
+<p><code>ExperimentalCycles</code> ライブラリは、Actor の現在の Cycle
+残高の確認、転送、払い戻しの確認に関する命令的な操作を提供します。</p>
+<p>このライブラリは以下の操作を提供します。</p>
+<pre class="motoko"><code>func balance() : (amount : Nat)
+
+func available() : (amount : Nat)
+
+func accept(amount : Nat) : (accepted : Nat)
+
+func add(amount : Nat) : ()
+
+func refunded() : (amount : Nat)</code></pre>
+<p><code>balance()</code> 関数は、Actor の現在の Cycle 残高を
+<code>amount</code> として返します。 <code>balance()</code>
+関数はステートフル（stateful）であり、<code>accept(n)</code>
+の呼び出し後や、Cycle を <code>add</code>
+した後の関数呼び出し、（払い戻しを反映させて）await
+から再開したりした後では異なる値を返す可能性があります。</p>
+<p>:::danger</p>
+<p>Cycle
+は消費された計算リソースを測定するものであるため、<code>balance()</code>
+の値は一般的に shared 関数を呼び出すたびに減少します。</p>
+<p>:::</p>
+<p><code>available()</code> 関数は、現在利用可能な Cycle
+の量（<code>amount</code>）を返します。
+これは、呼び出し元から送られた金額から、これまでに受け入れられた（<code>accept</code>
+された）累積金額を差し引いたものです。 現在の shared 関数や
+<code>async</code> 式から <code>return</code> や <code>throw</code>
+によって抜けると、残りの利用可能量は呼び出し元に自動的に払い戻されます。</p>
+<p><code>accept</code> 関数は <code>available()</code> から
+<code>balance()</code> へ <code>amount</code> を転送します。
+この関数は実際に転送された Cycle
+の量を返します。例えば、利用可能な量が少なかったり、Canister
+の残高制限に達している場合には、要求された量よりも少なくなることがあります。</p>
+<p><code>add(amount)</code> 関数は、次のリモートコール（shared
+関数呼び出しまたは <code>async</code> 式の評価）で転送される Cycle
+の追加量を指定します。 その際、最後の呼び出しから <code>add</code>
+された総 Cycle 量が <code>balance()</code>
+から（呼び出し前でなく呼び出し時に）差し引かれます。 この合計が
+<code>balance()</code>
+を超える場合、呼び出し元はトラップして呼び出しを中止します。</p>
+<p>:::note</p>
+<p>追加される Cycle 量は暗黙的に記録されます。各 <code>add</code>
+でインクリメントされ、 shared 関数のコールの後また await
+から再開されたときに、ゼロにリセットされます。</p>
+<p>:::</p>
+<p><code>refunded()</code> 関数は、現在のコンテキストにおける最後の
+<code>await</code> で払い戻された Cycle の <code>amount</code>
+をレポートします。ただし、まだ await
+が発生していない場合はゼロをレポートします。<code>refunded()</code>
+の呼び出しは情報を得るのみで、<code>balance()</code>
+には影響を与えません。 その代わり、<code>refunded</code>
+関数が払い戻しを監視するために使用されたかどうかに関わらず、払い戻しは自動的に現在の残高に追加されます。</p>
+<h3 id="例">例</h3>
+<p>理解を深めるため、<code>ExperimentalCycles</code>
+ライブラリを使用して、Cycle を保存するためのおもちゃの <em>貯金箱（piggy
+bank）</em> を実装してみましょう。</p>
+<p>この貯金箱には暗黙の所有者、<code>benefit</code>
+というコールバック関数、固定値である限度額（<code>capacity</code>）があり、これらはすべてコンストラクタが呼び出されたときに提供されます。
+コールバック関数は <em>引き出される（withdrawn）</em>
+量を転送するために使用されます。</p>
+<pre class="motoko"><code></code></pre>
+<p>貯金箱の所有者はコンストラクタ <code>PiggyBank()</code>
+の呼び出し元と（暗黙的に）なり、共有パターンである
+<code>shared(msg)</code> を用いて識別されます。 <code>msg.caller</code>
+フィールドは <code>Principal</code> で、プライベート変数である
+<code>owner</code> に格納されます（将来の参照用）。
+この構文についての詳しい説明は <a href="caller-id.md">プリンシパルと
+Caller の識別</a>を参照してください。</p>
+<p>貯金箱は初期状態では空っぽで、これは <code>savings</code>
+の現在の値がゼロであることで表現されます。</p>
+<p>所有者（<code>owner</code>）からの呼び出しのみが可能で、以下のような操作を行うことができます。</p>
+<ul>
+<li><p>貯金箱の現在の貯金額（<code>savings</code>）を問い合わせる
+(<code>getSavings()</code> 関数)。</p></li>
+<li><p>貯金箱からお金を引き出す（<code>withdraw(amount)</code>
+関数）。</p></li>
+</ul>
+<p>呼び出し元の制限は、<code>assert (msg.caller == owner)</code>
+という文（statement）によって強制されます。
+失敗すると関数がトラップされ、残高を明らかにしたり、Cycle
+を移動させることはできせん。</p>
+<p>どの呼び出し元も、任意の量の Cycle
+を貯金（<code>deposit</code>）することができ、貯金額が限度額（<code>capacity</code>）を超えて貯金箱を壊すことはありません。
+入金機能は利用可能（available）な金額の一部しか受け付けないため、入金額が上限を超えた呼び出し元は、受け付けられなかった
+Cycle の払い戻しを暗黙のうちに受けることになります。
+払い戻しは自動的に行われ、Internet Computer
+基盤によって保証されます。</p>
+<p>Cycle
+の転送は一方向（呼び出し元（Caller）から呼び出し先（Callee））であるため、Cycle
+を取得するためには、明示的なコールバック（コンストラクタが引数として受け取る
+<code>benefit</code> 関数）が必要になります。 ここでは、呼び出し元が
+<code>owner</code> であることを認証した後に、<code>benefit</code> が
+<code>withdraw</code> 関数によって呼び出されます。 <code>withdraw</code>
+の中で <code>benefit</code>
+を呼び出すと、呼び出し元と呼び出し先の関係が反転し、Cycle が
+"上流（upstream）" に流れるようになります。</p>
+<p><code>PiggyBank</code> の所有者は、実際には <code>owner</code>
+とは別の者に報酬を与えるようなコールバックを提供することができることに注意してください。</p>
+<p>以下は、ある所有者 <code>Alice</code> が <code>PiggyBank</code>
+のインスタンスをどのように使用するかを示しています。</p>
+<pre class="motoko"><code></code></pre>
+<p><code>Alice</code> のコードを詳しく見てみましょう。</p>
+<p><code>Alice</code> は新しい <code>PiggyBank</code> Actor
+を必要に応じて作成できるように、<code>PiggyBank</code> という Actor
+クラスをライブラリとしてインポートしています。</p>
+<p>ほとんどの動作は <code>Alice</code> の <code>test()</code>
+関数で発生します。</p>
+<p><code>PiggyBank</code> の新しいインスタンスである <code>porky</code>
+を作成する直前に、Alice は貯金箱を動かすために彼女の 10_000_000_000_000
+Cycles を使って <code>Cycles.add(10_000_000_000_000)</code>
+を呼び出しています。 インスタンス生成時に、Alice
+はコールバック関数である <code>Alice.credit</code>
+と、貯金箱の上限額（<code>10_000_000_000_000</code>）を渡しています。
+<code>Alice.credit</code> を渡すことで、引出しの受益者として
+<code>Alice</code> を指定しています。 <code>10_000_000_000_000</code>
+から少額のインストール費用を差し引いた Cycle
+が、初期化コードによる追加操作なしに <code>porky</code>
+の残高に振り込まれます。
+これは、使用するたびに自分自身のリソースを消費する、電子的な貯金箱のようなものと考えることができます。
+<code>PiggyBank</code>
+のコンストラクタの呼び出しは非同期なので、<code>Alice</code>
+はその結果を <code>await</code> する必要があります。</p>
+<p><code>porky</code> を作成した後、Alice は最初に <code>assert</code>
+を使って <code>porky.getSavings()</code>
+がゼロであることを検証しています。</p>
+<p><code>Alice</code> は次の <code>porky.deposit()</code> の呼び出しで
+<code>porky</code> に Cycle を転送するため、自分の Cycle のうち
+<code>1_000_000</code>
+を充当しています（<code>Cycles.add(1_000_000)</code>）。 Cycle は
+<code>porky.deposit()</code>
+のコールが成功した場合のみ（するはずです）、Alice
+の残高から消費されます。</p>
+<p><code>Alice</code> は次に、先ほど充当した量の半分である
+<code>500_000</code> を引き出し、<code>porky</code>
+の貯蓄が半分になったことを検証します。 <code>Alice</code> は
+<code>porky.withdraw()</code> で実行される <code>Alice.credit()</code>
+のコールバックを介して最終的に Cycle を受け取ります。
+なお、<code>porky.withdraw()</code> で <code>benefit</code>
+コールバック（ここでは <code>Alice.credit</code>）を実行する前に
+<code>add</code> された Cycle
+を受け取っていることに注意してください。</p>
+<p><code>Alice</code> はさらに <code>500_000</code> Cycle
+分引き出し、貯金を使い果たします。</p>
+<p>次に <code>Alice</code> はむだに <code>2_000_000</code> Cycle を
+<code>porky</code> に預けようとしますが、これは <code>porky</code>
+の上限を上回るため、<code>porky</code> は <code>1_000_000_000</code>
+を受け取り、残りの <code>1_000_000_000</code> を <code>Alice</code>
+に払い戻します。 <code>Alice</code>
+は（すでに）自動的に残高に戻された返金額を検証しています（<code>Cycles.refunded()</code>）。
+また、<code>Alice</code> は <code>porky</code>
+の調整後の残高も検証しています。</p>
+<p><code>Alice</code> の <code>credit()</code> 関数は
+<code>Cycles.accept(available)</code>
+を呼び出すことで、利用可能なすべての Cycle
+を単に受け取り、実際に受け取った（<code>accepted</code>）額を assert
+でチェックしています。</p>
+<p>:::note</p>
+<p>この例では、Alice はすでに所有している（すぐに使える）Cycle
+を使用しています。</p>
+<p>:::</p>
+<p>:::danger</p>
+<p><code>porky</code> は動作に Cycle を消費するため、Alice
+が回収する前に貯蓄したサイクルの一部あるいは全部を、<code>porky</code>
+が使う可能性があります。</p>
+<p>:::</p>
+<!--
+# Managing cycles
+
+Usage of the Internet Computer is measured, and paid for, in *cycles*. The Internet Computer maintains a balance of cycles per canister smart contract. In addition, cycles can be transferred between canisters.
+
+In Motoko programs targeting the Internet Computer, each actor represents an Internet Computer canister, and has an associated balance of cycles. The ownership of cycles can be transferred between actors. Cycles are selectively sent and received through messages, that is, shared function calls. A caller can choose to transfer cycles with a call, and a callee can choose to accept cycles that are made available by the caller. Unless explicitly instructed, no cycles are transferred by callers or accepted by callees.
+
+Callees can accept all, some or none of the available cycles up to limit determined by their actor’s current balance. Any remaining cycles are refunded to the caller. If a call traps, all its accompanying cycles are automatically refunded to the caller, without loss.
+
+In future, we may see Motoko adopt dedicated syntax and types to support safer programming with cycles. For now, we provide a temporary way to manage cycles through a low-level imperative API provided by the [ExperimentalCycles](./base/ExperimentalCycles.md) library in package `base`.
+
+:::note
+
+This library is subject to change and likely to be replaced by more high-level support for cycles in later versions of Motoko.
+
+:::
+
+## The `ExperimentalCycles` Library
+
+The `ExperimentalCycles` library provides imperative operations for observing an actor’s current balance of cycles, transferring cycles and observing refunds.
+
+The library provides the following operations:
+
+``` motoko no-repl
+func balance() : (amount : Nat)
+
+func available() : (amount : Nat)
+
+func accept(amount : Nat) : (accepted : Nat)
+
+func add(amount : Nat) : ()
+
+func refunded() : (amount : Nat)
+```
+
+Function `balance()` returns the actor’s current balance of cycles as `amount`. Function `balance()` is stateful and may return different values after calls to `accept(n)`, calling a function after `add`ing cycles, or resuming from await (reflecting a refund).
+
+:::danger
+
+Since cycles measure computational resources spent, the value of `balance()` generally decreases from one shared function call to the next.
+
+:::
+
+Function `available()`, returns the currently available `amount` of cycles. This is the amount received from the current caller, minus the cumulative amount `accept`ed so far by this call. On exit from the current shared function or `async` expression via `return` or `throw` any remaining available amount is automatically refunded to the caller.
+
+Function `accept` transfers `amount` from `available()` to `balance()`. It returns the amount actually transferred, which may be less than requested, for example, if less is available, or if canister balance limits are reached.
+
+Function `add(amount)` indicates the additional amount of cycles to be transferred in the next remote call, i.e. evaluation of a shared function call or `async` expression. Upon the call, but not before, the total amount of units `add`ed since the last call is deducted from `balance()`. If this total exceeds `balance()`, the caller traps, aborting the call.
+
+:::note
+
+the implicit register of added amounts, incremented on each `add`, is reset to zero on entry to a shared function, and after each shared function call or on resume from an await.
+
+:::
+
+Function `refunded()` reports the `amount` of cycles refunded in the last `await` of the current context, or zero if no await has occurred yet. Calling `refunded()` is solely informational and does not affect `balance()`. Instead, refunds are automatically added to the current balance, whether or not `refunded` is used to observe them.
+
+### Example
+
+To illustrate, we will now use the `ExperimentalCycles` library to implement a toy *piggy bank* for saving cycles.
+
+Our piggy bank has an implicit owner, a `benefit` callback and a fixed `capacity`, all supplied at time of construction. The callback is used to transfer *withdrawn* amounts.
+
+``` motoko name=PiggyBank file=./examples/PiggyBank.mo
+```
+
+The owner of the bank is identified with the (implicit) caller of constructor `PiggyBank()`, using the shared pattern, `shared(msg)`. Field `msg.caller` is a `Principal` and is stored in private variable `owner` (for future reference). See [Principals and caller identification](caller-id.md) for more explanation of this syntax.
+
+The piggy bank is initially empty, with zero current `savings`.
+
+Only calls from `owner` may:
+
+-   query the current `savings` of the piggy bank (function `getSavings()`), or
+
+-   withdraw amounts from the savings (function `withdraw(amount)`).
+
+The restriction on the caller is enforced by the statements `assert (msg.caller ==
+owner)`, whose failure causes the enclosing function to trap, without revealing the balance or moving any cycles.
+
+Any caller may `deposit` an amount of cycles, provided the savings will not exceed `capacity`, breaking the piggy bank. Because the deposit function only accepts a portion of the available amount, a caller whose deposit exceeds the limit will receive an implicit refund of any unaccepted cycles. Refunds are automatic and ensured by the Internet Computer infrastructure.
+
+Since transfer of cycles is one-directional (from caller to callee), retrieving cycles requires the use of an explicit callback (the `benefit` function, taken by the constructor as an argument). Here, `benefit` is called by the `withdraw` function, but only after authenticating the caller as `owner`. Invoking `benefit` in `withdraw` inverts the caller/caller relationship, allowing cycles to flow "upstream".
+
+Note that the owner of the `PiggyBank` could, in fact, supply a callback that rewards a beneficiary distinct from `owner`.
+
+Here’s how an owner, `Alice`, might use an instance of `PiggyBank`:
+
+``` motoko include=PiggyBank file=./examples/Alice.mo
+```
+
+Let’s dissect `Alice`'s code.
+
+`Alice` imports the `PiggyBank` actor class as a library, so she can create a new `PiggyBank` actor on demand.
+
+Most of the action occurs in `Alice`'s `test()` function:
+
+Alice dedicates `10_000_000_000_000` of her own cycles for running the piggy bank, by calling `Cycles.add(10_000_000_000_000)` just before creating a new instance, `porky`, of the `PiggyBank`, passing callback `Alice.credit` and capacity (`1_000_000_000`). Passing `Alice.credit` nominates `Alice` as the beneficiary of withdrawals. The `10_000_000_000_000` cycles, minus a small installation fee, are credited to `porky`'s balance without any further action by `porky` initialization code. You can think of this as an electric piggy bank, that consumes its own resources as its used. Since constructing a `PiggyBank` is asynchronous, `Alice` needs to `await` the result.
+
+After creating `porky`, she first verifies that the `porky.getSavings()` is zero using an `assert`.
+
+`Alice` dedicates `1_000_000` of her cycles (`Cycles.add(1_000_000)`) to transfer to `porky` with the next call to `porky.deposit()`. The cycles are only consumed from Alice’s balance if the call to `porky.deposit()` succeeds (which it should).
+
+`Alice` now withdraws half the amount, `500_000`, and verifies that `porky`'s savings have halved. `Alice` eventually receives the cycles via a callback to `Alice.credit()`, initiated in `porky.withdraw()`. Note the received cycles are precisely the cycles `add`ed in `porky.withdraw()`, before it invokes its `benefit` callback, that is, `Alice.credit`.
+
+`Alice` withdraws another `500_000` cycles to wipe out her savings.
+
+`Alice` vainly tries to deposit `2_000_000_000` cycles into `porky` but this exceeds `porky`'s capacity by half, so `porky` accepts `1_000_000_000` and refunds the remaining `1_000_000_000` to `Alice`. `Alice` verifies the refund amount (`Cycles.refunded()`), which has (already) been automatically restored to her balance. She also verifies `porky`'s adjusted savings.
+
+`Alice`'s `credit()` function simply accepts all available cycles by calling `Cycles.accept(available)`, checking the actually `accepted` amount with an assert.
+
+:::note
+
+For this example, Alice is using her (readily available) cycles, that she already owns.
+
+:::
+
+:::danger
+
+Because `porky` consumes cycles in its operation, it is possible for `porky` to spend some or even all of Alice’s cycle savings before she has a chance to retrieve them.
+
+:::
+
+-->
+</body>
+</html>

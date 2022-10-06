@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>md/caller-id.md</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">md/caller-id.md</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#プリンシパルと-caller-の識別">プリンシパルと Caller
+の識別</a></li>
+</ul>
+</nav>
+<h1 id="プリンシパルと-caller-の識別">プリンシパルと Caller の識別</h1>
+<p>Motoko の Shared 関数は、シンプルな
+Caller（関数の呼び出し元）の識別（Identification）をサポートしており、これにより関数の
+Caller に関連付けられた Internet Computer の
+<strong>プリンシパル</strong> を検査することが可能になります。
+関数の呼び出しに関連づけられたプリンシパルは、ユニークなユーザか
+Canister スマートコントラクトを識別する値です。</p>
+<p>関数の Caller
+に関連づけられたプリンシパルを用いて、プログラム内で基本的な形式の
+<em>アクセスコントロール</em> を実装することができます。</p>
+<p>Motoko では、<code>shared</code> キーワードを用いて
+<code>Shared</code> 関数を宣言します。 また、Shared 関数は
+<code>{caller : Principal}</code>
+型のオプション引数を宣言することができます。</p>
+<p>Shared 関数の Caller
+にアクセスする方法を説明するため、以下のような関数を考えます：</p>
+<pre class="motoko"><code>shared(msg) func inc() : async () {
+  // ... msg.caller ...
+}</code></pre>
+<p>この例では、Shared 関数である <code>inc()</code> は Record 型である
+<code>msg</code> を受け取り、<code>msg.caller</code> は <code>msg</code>
+のプリンシパルフィールドにアクセスします。</p>
+<p><code>inc()</code>
+関数の呼び出しは変更されません。それぞれの関数呼び出しにおいて、呼び出し側のプリンシパルはユーザーではなくシステムから提供されます。そのため、悪意のあるユーザーはプリンシパルを偽造したり、なりすましたりすることができません。</p>
+<p>Actor クラスのコンストラクタの Caller にアクセスするには、Actor
+クラスの宣言と同じ（オプショナルの）シンタックスを用います。
+例えば、以下のようになります：</p>
+<pre class="motoko"><code>shared(msg) actor class Counter(init : Nat) {
+  // ... msg.caller ...
+}</code></pre>
+<p>この例を拡張し、<code>Counter</code>
+のインストーラであるプリンシパルだけが <code>Counter</code>
+を変更できるように制限したいとします。 これを行うには、Actor
+を設置したプリンシパルを <code>owner</code>
+変数にバインドして記録します。 そうすることで、各メソッドの呼び出し元が
+<code>owner</code>
+と等しいかどうかを次のようにチェックすることができます：</p>
+<pre class="motoko"><code></code></pre>
+<p>この例では、<code>assert (owner == msg.caller)</code> により、関数
+<code>inc()</code> と <code>bump()</code>
+の呼び出しが認証されていなければトラップし、<code>count</code>
+変数の変更を阻止します。一方、<code>read()</code>
+関数はあらゆる呼び出しを許可しています。</p>
+<p>また、<code>shared</code>
+の引数は単なるパターンなので、お好みで、上記をパターンマッチを使うように書き換えることもできます:</p>
+<pre class="motoko"><code></code></pre>
+<p>:::note</p>
+<p>単純な Actor
+宣言では、そのインストーラにアクセスすることはできません。Actor
+のインストーラにアクセスする必要がある場合は、Actor 宣言を引数なしの
+Actor クラスに書き換えてください。</p>
+<p>:::</p>
+<p>プリンシパルは等価性、順序付け、ハッシングをサポートしているため、コンテナにプリンシパルを効率的に格納して、許可リストや拒否リストを管理することができます。
+プリンシパルに関するその他の操作は、<a
+href="./base/Principal.md">Principal</a>
+標準ライブラリを参照してください。</p>
+<!--
+# Principals and caller identification
+
+Motoko’s shared functions support a simple form of caller identification that allows you to inspect the Internet Computer **principal** associated with the caller of a function. The principal associated with a call is a value that identifies a unique user or canister smart contract.
+
+You can use the **principal** associated with the caller of a function to implement a basic form of *access-control* in your program.
+
+In Motoko, the `shared` keyword is used to declare a shared function. The shared function can also declare an optional parameter of type `{caller : Principal}`.
+
+-->
+
+<!--
+(The type is a record to accommodate future extension.)
+-->
+
+<!--
+
+To illustrate how to access the caller of a shared function, consider the following:
+
+``` motoko
+shared(msg) func inc() : async () {
+  // ... msg.caller ...
+}
+```
+
+In this example, the shared function `inc()` specifies a `msg` parameter, a record, and the `msg.caller` accesses the principal field of `msg`.
+
+The calls to the `inc()` function do not change — at each call site, the caller’s principal is provided by the system, not the user — so the principal cannot be forged or spoofed by a malicious user.
+
+To access the caller of an actor class constructor, you use the same (optional) syntax on the actor class declaration. For example:
+
+``` motoko
+shared(msg) actor class Counter(init : Nat) {
+  // ... msg.caller ...
+}
+```
+
+To extend this example, assume you want to restrict the `Counter` actor so it can only be modified by the installer of the `Counter`. To do this, you can record the principal that installed the actor by binding it to an `owner` variable. You can then check that the caller of each method is equal to `owner` like this:
+
+``` motoko file=./examples/Counters-caller.mo
+```
+
+In this example, the `assert (owner == msg.caller)` expression causes the functions `inc()` and `bump()` to trap if the call is unauthorized, preventing any modification of the `count` variable while the `read()` function permits any caller.
+
+The argument to `shared` is just a pattern, so, if you prefer, you can also rewrite the above to use pattern matching:
+
+``` motoko file=./examples/Counters-caller-pat.mo
+```
+
+:::note
+
+Simple actor declarations do not let you access their installer. If you need access to the installer of an actor, rewrite the actor declaration as a zero-argument actor class instead.
+
+:::
+
+Principals support equality, ordering, and hashing, so you can efficiently store principals in containers, for example, to maintain an allow or deny list. More operations on principals are available in [Principal](./base/Principal.md) base library.
+
+-->
+</body>
+</html>

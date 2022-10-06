@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>md/motoko-introduction.md</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">md/motoko-introduction.md</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#イントロダクション">イントロダクション</a>
+<ul>
+<li><a
+href="#アプローチ性言語の親しみやすさ">アプローチ性（言語の親しみやすさ）</a></li>
+<li><a
+href="#非同期メッセージングと型安全な実行">非同期メッセージングと型安全な実行</a></li>
+<li><a
+href="#actor-としての各-canister-スマートコントラクト"><em>Actor</em>
+としての各 Canister スマートコントラクト</a>
+<ul>
+<li><a href="#非同期-actor">非同期 Actor</a></li>
+<li><a href="#非同期-動作のサポート"><em>非同期</em>
+動作のサポート</a></li>
+<li><a href="#async--await-構文"><code>async</code> / <code>await</code>
+構文</a></li>
+<li><a href="#型と-static">型と Static</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="イントロダクション">イントロダクション</h1>
+<p>Motoko は、<a href="../../../../concepts/what-is-IC.md">Internet
+Computer</a> 上で動作するスマートコントラクトの Canister
+の開発に特化した、最新の汎用プログラミング言語です。 この言語は Internet
+Computer
+を直接のターゲットにしていますが、将来的に他のターゲットへのコンパイルをサポートするのに十分な程度には一般的な設計になっています。</p>
+<h2
+id="アプローチ性言語の親しみやすさ">アプローチ性（言語の親しみやすさ）</h2>
+<p>Motoko は、JavaScript、Rust、Swift、TypeScript、C#、Java
+などのモダンプログラミング言語を通してオブジェクト指向や関数型プログラミングのイディオムに基本的な知識を持っているプログラマーが親しみやすいように設計されたモダン言語です。</p>
+<h2
+id="非同期メッセージングと型安全な実行">非同期メッセージングと型安全な実行</h2>
+<p>Motoko
+は、分散型アプリケーション（Dapps）のための特別なプログラミング抽象化を含む、モダンプログラミングのイディオムを使用可能にしています。
+それぞれの Dapps は、<em>非同期のメッセージパッシング</em>
+のみで通信する、1 つまたは複数の <em>Actor</em> で構成されます。Actor
+のステートは、他のすべての Actor
+から分離されており、分散性をサポートしています。複数の Actor
+間でステートを共有する方法はありません。 Motoko の Actor
+ベースのプログラミングの抽象化は、人間が読めるメッセージパッシングのパターンによってプログラミングすることを可能にし、各ネットワークの相互作用が特定のルールに従うことや、よくある間違いを避けることを強制します。</p>
+<p>具体的には、Motoko
+プログラムは実行前に各プログラムをチェックする実用的でモダンな型システムが含まれているため、<em>型健全</em>
+です。 Motoko の型システムは、Motoko
+のプログラムが、可能なすべての入力に対して動的な型エラーを起こさずに安全に実行されるかどうかを静的にチェックします。
+その結果、他の言語、特に Web
+プログラミング言語でよく見られるプログラミング上の落とし穴の類の全てが除外されます。これには、NULL
+参照エラー、引数や返り値の型のミスマッチ、フィールドの欠落エラーなどが含まれます。</p>
+<p>実行時には、Motoko は、<a
+href="about-this-guide.md#webassembly">WebAssembly</a>
+という、モダンコンピュータハードウェアをきれいに抽象化したポータブルなバイナリフォーマットに静的にコンパイルし、インターネット上で広く実行したり、<a
+href="../../../../concepts/what-is-IC.md">Internet Computer</a>
+上で実行したりすることを可能にしています。</p>
+<h2 id="actor-としての各-canister-スマートコントラクト"><em>Actor</em>
+としての各 Canister スマートコントラクト</h2>
+<p>Motoko は、<a href="../../../../concepts/what-is-IC.md">Internet
+Computer</a> 上の Canister スマートコントラクトのものを含む Service
+を表現するための <strong>Actor ベース</strong>
+のプログラミングモデルを開発者に提供しています。</p>
+<p>Actor
+はオブジェクトに似ていますが、そのステートが完全に分離されており、世界中とのやりとりがすべて
+<em>非同期</em> メッセージングで行われる点が特別です。</p>
+<p>Actor との間のすべてのコミュニケーションは、Internet Computer
+のメッセージングプロトコルを使い、ネットワーク上で非同期にメッセージを渡しています。
+Actor
+のメッセージは順番に処理されるので、ステートの変更が競合状態を認めることはありません（<code>await</code>
+式の区切りによって明示的に許可されている場合を除く）。</p>
+<p>Internet Computer
+は、送信された各メッセージが確実に応答を受け取ることを保証します。レスポンスは、ある値を持つ成功ステータスか、エラーのいずれかです。エラーには、受信側の
+Canister
+による明示的なメッセージの拒否、ゼロ除算などの不正な命令によるトラップ、配布やリソースの制約によるシステムエラーなどがあります。例えば、システムエラーとは、受信者が一時的または恒久的に利用できないことです（受信
+Actor にアクセス集中しているか、削除されているかのいずれか）。</p>
+<h3 id="非同期-actor">非同期 Actor</h3>
+<p>他の <em>モダン</em> プログラミング言語と同様に、Motoko
+はコンポーネント間の <em>非同期</em>
+コミュニケーションのための人間工学的なシンタックスを認めています。</p>
+<p>Motoko の場合、通信している各コンポーネントが Actor です。</p>
+<p>Actor を <em>使う</em> 例として（おそらく自分自身も <em>Actor</em>
+だと考えるのがよいでしょう）、この 3
+行のプログラムを考えてみましょう。</p>
+<pre class="motoko"><code>let result1 = service1.computeAnswer(params);
+let result2 = service2.computeAnswer(params);
+finalStep(await result1, await result2)</code></pre>
+<p>このプログラムの動作は、3 つのステップでまとめることができます：</p>
+<ol type="1">
+<li><p>プログラムは、Motoko Actor または他の言語で実装された Canister
+スマートコントラクトとして実装された 2 つの異なる Service に対して、2
+つのリクエスト（1 行目と 2 行目）を行います。</p></li>
+<li><p>プログラムは、各返り値に対してキーワード <code>await</code>
+を用いて、各返り値の準備ができるのを待ちます（3 行目）。</p></li>
+<li><p>プログラムは、最終ステップ（3 行目）で <code>finalStep</code>
+関数を呼び出して、両方の結果を使用します。</p></li>
+</ol>
+<p>一般的に言えば、Service は互いに待つのではなく、実行を
+<em>インターリーブ</em>
+することで全体の待ち時間を短縮することができます。
+しかし、特別な言語サポート <em>なし</em>
+にこの方法で待ち時間を短縮しようとすると、そのようなインターリーブにはすぐに明快さや単純さが犠牲となります。</p>
+<p>インターリーブ実行が <em>ない</em> 場合（例えば、上記の呼び出しが 2
+つではなく 1
+つだけの場合）でも、同じ理由で、プログラミングの抽象化によって明確さと単純さを実現しています。
+つまり、プログラムを変換する場所をコンパイラに知らせることで、背後にあるシステムのメッセージパッシングループによる実行をインターリーブするために、プログラマがプログラムロジックを歪めることをせずにすみます。</p>
+<p>このプログラムでは、3 行目で <code>await</code>
+を使用することで、そのインターリーブ動作を　 Motoko
+が提供する人間が読めるシンタックスでシンプルに表現しています。</p>
+<p>このような抽象化がなされていない言語環境では、開発者は単にこれらの 2
+つの関数を直接呼び出すのではなく、非常に高度なプログラミングパターンを採用することになります。おそらくシステムが提供する
+<code>イベントハンドラ</code> の中に開発者が提供する
+<code>コールバック関数</code> を登録することになるでしょう。</p>
+<p>各コールバックは、呼び出した関数の返り値の準備ができたときに発生する非同期イベントを処理することになります。このようなシステムレベルのプログラミングは強力ですが、高レベルのデータフローを、共有されているステートを通じて通信する低レベルのシステムイベントに分解することになるため、非常にエラーが発生しやすいです。
+このようなプログラミングスタイルが必要な場合もありますが、ここではそうではありません。</p>
+<p>私たちのプログラムは、このような煩雑なプログラミングスタイルを避け、代わりにより自然な
+<em>ダイレクト</em>
+スタイルを採用しており、各リクエストは通常の関数呼び出しに近い形となっています。
+この、よりシンプルで様式化されたプログラミング形式は、今日のほとんどのモダンソフトウェアがそうであるように、<em>外部環境</em>
+と相互作用する実用的なシステムの表現としてますます人気が高まっています。</p>
+<p>しかし、これには特別なコンパイラと型システムのサポートが必要で、その詳細については後述します。</p>
+<h3 id="非同期-動作のサポート"><em>非同期</em> 動作のサポート</h3>
+<p><em>非同期</em>
+コンピューティングでは、プログラムとその実行環境は、互いに <em>並行</em>
+して実行される <em>内部計算</em> を行うことができます。</p>
+<p>具体的には、非同期プログラムとは、プログラムの実行を計算環境に要求した場合に、その完了を待つ必要が（必ずしも）ないものです。
+同時に、計算環境が要求された計算を完了するまでの間、プログラムはその環境の中で内部計算を行うことが許されます。上の例では、プログラムは最初の要求が完了するのを待つ前に
+2 番目の要求を発行します。</p>
+<p>対称的に、環境側がプログラムに要求することは、プログラムの回答を待つことを（必ずしも）必要としません。
+環境側は、プログラム側で答えが生成される間に外部で計算を進行することができます。</p>
+<p>上では、この “通知”
+パターンの例を示していませんが、これはコールバック（および <em>高次</em>
+関数と制御フロー）を使用するため、より複雑になるからです。</p>
+<h3 id="async--await-構文"><code>async</code> / <code>await</code>
+構文</h3>
+<p>わかりやすさとシンプルさへのニーズに対応するために、Motoko
+では急速に普及している <code>async</code> と <code>await</code>
+というプログラム構成を採用しています。これは、複雑になりがちな非同期の依存関係グラフを記述するための
+<em>構造化された</em> 言語をプログラマにもたらします。</p>
+<p><a href="language-manual.md#async">async</a> の構文によって、Future
+が導入されます。 Future の値は <em>将来的に非同期に配信される</em>
+結果の <em>promise</em> を表します（上の最初の例では示されていません）。
+Future については、<a href="actors-async.md">Actor と async データ</a>で
+Actor を導入した際により詳しく学びます。</p>
+<p>ここでは単純に、<code>service1.computeAnswer(params)</code> と
+<code>service2.computeAnswer(params)</code>
+を呼び出した際に返ってくる値を使用します。</p>
+<p><code>await</code> 構文を用いると Future に同期し、その生成元によって
+Future が完了するまで計算を中断します。 上の例では、2 つの Service
+の呼び出しから結果を得るために、<code>await</code> が 2
+つ使われています。</p>
+<p>開発者がこれらのキーワードを使用すると、コンパイラは必要に応じてプログラムを変換します。多くの場合、純粋に同期的な言語では手作業で実行するのが面倒な、プログラムの制御フローやデータフローの複雑な変換を行います。
+一方、Motoko
+の型システムでは、型の生成側と使用側を流れる型は常に一致しており、Sercive
+間で送信されるデータ型は行き来することが許可されていること、そして（例えば）<a
+href="mutable-state.md">プライベートな可変型ステート</a>
+を含まないことなど、これらの構成要素の一定の正しい使用パターンが強制されます。</p>
+<h3 id="型と-static">型と Static</h3>
+<p>他のモダンプログラミング言語と同様、Motoko
+では、各変数に関数やオブジェクト、プリミティブなデータ（文字列、単語、整数など）の値を入れることができます。レコード、タプル、<em>バリアント</em>
+と呼ばれる “タグ付けされたデータ” など、他の <a
+href="basic-concepts.md#intro-values">値の型</a> も使用可能です。</p>
+<p>Motoko は、<em>型の健全性</em>
+としても知られる型安全性の形式的な特性を享受しています。
+この考え方は、<a
+href="basic-concepts.md#type-soundness">正しく型付けされた Motoko
+プログラムは間違いを起こさない</a>
+というフレーズでしばしばまとめられます。これは、データに対して実行される操作は、その静的な型によって許可されるものだけであるという意味です。</p>
+<p>例えば、Motoko プログラムの各変数には関連する <em>型</em>
+があり、この型はプログラムが実行される前に <em>静的に</em>
+知られています。 各変数の使用はコンパイラによってチェックされ、NULL
+参照エラー、無効なフィールドアクセスなどの実行時の型エラーを防ぎます。</p>
+<p>この意味で、Motoko
+の型は、プログラムのソースコードの中で、<em>信頼できる、<strong>コンパイラが検証した</strong>
+ドキュメント</em> を提供します。</p>
+<p>通常通り、動的テストでは Motoko
+の型システムの手の届かないところにあるプロパティをチェックすることができます。
+Motoko の型システムはモダンではありますが、意図的に <code>先進的</code>
+ではなく、特に風変わりなものでもありません。 むしろ、Motoko
+の型システムは、モダンでありながら非常に理解しやすい、<a
+href="about-this-guide.md#modern-type-systems">実用的な型システム</a>の標準的な概念を統合し、汎用の分散アプリケーションをプログラミングするための、親しみやすく表現力豊かでありながらも安全な言語を提供しています。</p>
+<!--
+
+# Introduction
+
+Motoko is a modern, general-purpose programming language you can use specifically to author [Internet Computer](../../../../concepts/what-is-IC.md) canister smart contracts. Although aimed squarely at the Internet Computer, its design is general enough to support future compilation to other targets.
+
+## Approachability
+
+Motoko is a modern language designed to be approachable for programmers who have some basic familiarity with modern object-oriented and/or functional programming idioms in either JavaScript, or another modern programming language, such as Rust, Swift, TypeScript, C#, or Java.
+
+## Asynchronous messaging and type sound execution
+
+Motoko permits modern programming idioms, including special programming abstractions for distributed applications (dapps). Each dapp consists of one or more *actors* that communicate solely by *asynchronous message passing*. The state of an actor is isolated from all other actors, supporting distribution. There is no way to share state between several actors. The actor-based programming abstractions of Motoko permit human-readable message-passing patterns, and they enforce that each network interaction obeys certain rules and avoids certain common mistakes.
+
+Specifically, Motoko programs are *type sound* since Motoko includes a practical, modern type system that checks each one before it executes. The Motoko type system statically checks that each Motoko program will execute safely, without dynamic type errors, on all possible inputs. Consequently, entire classes of common programming pitfalls that are common in other languages, and web programming languages in particular, are ruled out. This includes null reference errors, mis-matched argument or result types, missing field errors and many others.
+
+To execute, Motoko statically compiles to [WebAssembly](about-this-guide.md#webassembly), a portable binary format that abstracts cleanly over modern computer hardware, and thus permits its execution broadly on the Internet, and the [Internet Computer](../../../../concepts/what-is-IC.md).
+
+## Each canister smart contract as an *actor*
+
+Motoko provides an **actor-based** programming model to developers to express *services*, including those of canister smart contracts on the [Internet Computer](../../../../concepts/what-is-IC.md).
+
+An actor is similar to an object, but is special in that its state is completely isolated, and all its interactions with the world are by *asynchronous* messaging.
+
+All communication with and between actors involves passing messages asynchronously over the network using the Internet Computer’s messaging protocol. An actor’s messages are processed in sequence, so state modifications never admit race conditions (unless explicitly allowed by punctuating `await` expressions).
+
+The Internet Computer ensures that each message that is sent receives a response. The response is either success with some value, or an error. An error can be the explicit rejection of the message by the receiving canister, a trap due to an illegal instruction such as division by zero, or a system error due to distribution or resource constraints. For example, a system error might be the transient or permanent unavailability of the receiver (either because the receiving actor is oversubscribed or has been deleted).
+
+### Asynchronous actors
+
+Like other *modern* programming languages, Motoko permits an ergonomic syntax for *asynchronous* communication among components.
+
+In the case of Motoko, each communicating component is an actor.
+
+As an example of *using* actors, perhaps as an actor ourselves, consider this three-line program:
+
+``` motoko no-repl
+let result1 = service1.computeAnswer(params);
+let result2 = service2.computeAnswer(params);
+finalStep(await result1, await result2)
+```
+
+We can summarize the program’s behavior with three steps:
+
+1.  The program makes two requests (lines 1 and 2) to two distinct services, each implemented as a Motoko actor or canister smart contract implemented in some other language.
+
+2.  The program waits for each result to be ready (line 3) using the keyword `await` on each result value.
+
+3.  The program uses both results in the final step (line 3) by calling the `finalStep` function.
+
+Generally-speaking, the services *interleave* their executions rather than wait for one another, since doing so reduces overall latency. However, if we try to reduce latency this way *without* special language support, such interleaving will quickly sacrifice clarity and simplicity.
+
+Even in cases where there are *no* interleaving executions (for example, if there were only one call above, not two), the programming abstractions still permit clarity and simplicity, for the same reason. Namely, they signal to the compiler where to transform the program, freeing the programmer from contorting the program’s logic in order to interleave its execution with the underlying system’s message-passing loop.
+
+Here, the program uses `await` in line 3 to express that interleaving behavior in a simple fashion, with human-readable syntax that is provided by Motoko.
+
+In language settings that lack these abstractions, developers would not merely call these two functions directly, but would instead employ very advanced programming patterns, possibly registering developer-provided “callback functions” within system-provided “event handlers”. Each callback would handle an asynchronous event that arises when an answer is ready. This kind of systems-level programming is powerful, but very error-prone, since it decomposes a high-level data flow into low-level system events that communicate through shared state. Sometimes this style is necessary, but here it is not.
+
+Our program instead eschews that more cumbersome programming style for this more natural, *direct* style, where each request resembles an ordinary function call. This simpler, stylized programming form has become increasingly popular for expressing practical systems that interact with an *external environment*, as most modern software does today. However, it requires special compiler and type-system support, as we discuss in more detail below.
+
+### Support for *asynchronous* behavior
+
+In an *asynchronous* computing setting, a program and its running environment are permitted to perform *internal computations* that occur *concurrently* with one another.
+
+Specifically, asynchronous programs are ones where the program’s requests of its environment do not (necessarily) require the program to wait for the environment. In the meantime, the program is permitted to make internal progress within this environment while the environment proceeds to complete the request. In the example, above, the program issues the second request before waiting for the first request to complete.
+
+Symmetrically, the environment’s requests of the program do not (necessarily) require the environment to wait for the program’s answer: the environment can make external progress while the answer is produced.
+
+We do not show an example of this “notify” pattern above, since it uses callbacks (and *higher-order* functions and control flow) and is thus more complex.
+
+### Syntactic forms `async` and `await`
+
+To address the need for clarity and simplicity, Motoko adopts the increasingly-common program constructs `async` and `await`, which afford the programmer a *structured* language for describing potentially-complex asynchronous dependency graphs.
+
+The [async](language-manual.md#async) syntax introduces futures. A future value represents a *promise* of a result *that will be delivered, asynchronously, sometime in the future* (not shown in the first example above). You’ll learn more about futures when we introduce actors in [Actors and async data](actors-async.md).
+
+Here, we merely use the ones that arise from calling `service1.computeAnswer(params)` and `service2.computeAnswer(params)`.
+
+The syntax `await` synchronizes on a future, and suspends computation until the future is completed by its producer. We see two uses of `await` in the example above, to obtain the results from two calls to services.
+
+When the developer uses these keywords, the compiler transforms the program as necessary, often doing complex transformations to the program’s control- and data-flow that would be tedious to perform by hand in a purely synchronous language. Meanwhile, the type system of Motoko enforces certain correct usage patterns for these constructs, including that types flowing between consumers and producers always agree, and that the types of data sent among services are permitted to flow there, and do not (for example) contain [private mutable state](mutable-state.md).
+
+### Types are static
+
+Like other modern programming languages, Motoko permits each variable to carry the value of a function, object, or a primitive datum (for example, a string, word, or integer). Other [types of values](basic-concepts.md#intro-values) exist too, including records, tuples, and “tagged data” called *variants*.
+
+Motoko enjoys the formal property of type safety, also known as *type soundness*. We often summarize this idea with the phrase: [Well-typed Motoko programs don’t go wrong](basic-concepts.md#type-soundness), meaning that the only operations that will be performed on data are those permitted by its static type.
+
+For example, each variable in a Motoko program carries an associated *type*, and this type is known *statically*, before the program executes. Each use of each variable is checked by the compiler to prevent runtime type errors, including null reference errors, invalid field access and the like.
+
+In this sense, Motoko types provide a form of *trustworthy, **compiler-verified** documentation* in the program source code.
+
+As usual, dynamic testing can check properties that are beyond the reach of the Motoko type system. While modern, the Motoko type system is intentionally *not* “advanced” or particularly exotic. Rather, the type system of Motoko integrates standard concepts from modern, but well-understood, [modern type systems](about-this-guide.md#modern-type-systems) to provide an approachable, expressive yet safe language for programming general-purpose, distributed applications.
+
+-->
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>md/pattern-matching.md</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">md/pattern-matching.md</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#パターンマッチング">パターンマッチング</a>
+<ul>
+<li><a
+href="#パターンに関する追加情報">パターンに関する追加情報</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="パターンマッチング">パターンマッチング</h1>
+<p>パターンマッチングとは、構造化されたデータのテストとその構成要素への分解を容易にする言語機能です。ほとんどのプログラミング言語では、構造化データを構築するための機能が馴染みの方法で用意されていますが、パターンマッチングでは、構造化データを分解し、その断片を指定した名前に束縛（bind）することでスコープ内に取り込むことができます。
+構文的には、パターンは構造化データの構築に似ていますが、一般的に関数の引数の位置や、<code>switch</code>
+式の <code>case</code> キーワードの後や、<code>let</code> や
+<code>var</code> 宣言の後など、入力を指示する場所に出現します。</p>
+<p>以下の関数呼び出しを考えてみましょう。</p>
+<pre class="motoko"><code>let name : Text = fullName({ first = &quot;Jane&quot;; mid = &quot;M&quot;; last = &quot;Doe&quot; });</code></pre>
+<p>このコードでは、3 つのフィールドを持つレコードを作成し、関数
+<code>fullName</code>
+に渡しています。関数呼び出しの結果には名前が付けられ、識別子である
+<code>name</code>
+に束縛されることでスコープに取り込まれます。最後の束縛部分がパターンマッチングと呼ばれており、<code>name : Text</code>
+は最も単純なパターン形式の一つです。例えば、次のような関数の実装を考えます。</p>
+<pre class="motoko"><code>func fullName({ first : Text; mid : Text; last : Text }) : Text {
+  first # &quot; &quot; # mid # &quot; &quot; # last
+};</code></pre>
+<p>入力は（匿名の）オブジェクトで、3 つの <code>Text</code>
+フィールドに分解され、その値は識別子
+<code>first</code>、<code>mid</code>、<code>last</code>
+に束縛されます。これらのフィールドは、関数本体のブロックの中で自由に使用することができます。上記では、オブジェクトのフィールドパターンを別名付け（aliasing）の一種である
+<em>名前のパニング</em>（name punning;
+別の名前を付けること）を使って、フィールドの名前と一致させています。より一般的には、<code>…​; mid = m : Text; …​</code>
+のように、フィールドとは別の名前を付けることができます。ここでは
+<code>mid</code> がどのフィールドにマッチするかを決定し、<code>m</code>
+がスコープ内で用いられる名前を決定します。</p>
+<p>パターンマッチングを使用して、リテラル定数のような
+<em>リテラルパターン</em> を宣言することもできます。リテラルパターンは
+<code>switch</code>
+式で特に便利です。なぜなら、現在のパターンマッチングを <em>失敗</em>
+させ、次のパターンへのマッチングに進ませることができるからです。例えば、以下のようになります。</p>
+<pre class="motoko"><code>switch (&quot;Adrienne&quot;, #female) {
+  case (name, #female) { name # &quot; is a girl!&quot; };
+  case (name, #male) { name # &quot; is a boy!&quot; };
+  case (name, _) { name # &quot;, is a human!&quot; };
+}</code></pre>
+<p>上のパターンは最初の <code>case</code> 節にマッチし (識別子
+<code>name</code> への束縛は失敗せず、短縮形のバリアントリテラル
+<code>#Female</code>
+は等しいと比較されるから)、<code>"Adrienne is a girl!"</code>
+と評価されます。最後の節は、<em>ワイルドカード</em> パターン
+<code>_</code>
+の例を示しています。これは失敗することはないですが、識別子を束縛することはありません。</p>
+<p>最後のパターンは <code>or</code>
+パターンです。その名前が示すように、これは 2 つ以上のパターンを
+<code>or</code>
+というキーワードで区切ったものです。それぞれのサブパターンは同じ識別子のセットに束縛されなければならず、左から右へとマッチングされます。<code>or</code>
+パターンは、一番右のサブパターンが失敗したときに失敗します。</p>
+<table>
+<thead>
+<tr class="header">
+<th>pattern kind</th>
+<th>example(s)</th>
+<th>context</th>
+<th>can fail</th>
+<th>remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>literal</td>
+<td><code>null</code>, <code>42</code>, <code>()</code>,
+<code>"Hi"</code></td>
+<td>everywhere</td>
+<td>when the type has more than one value</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>named</td>
+<td><code>age</code>, <code>x</code></td>
+<td>everywhere</td>
+<td>no</td>
+<td>introduces identifiers into a new scope</td>
+</tr>
+<tr class="odd">
+<td>wildcard</td>
+<td><code>_</code></td>
+<td>everywhere</td>
+<td>no</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>typed</td>
+<td><code>age : Nat</code></td>
+<td>everywhere</td>
+<td>conditional</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>option</td>
+<td><code>?0</code>, <code>?val</code></td>
+<td>everywhere</td>
+<td>yes</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>tuple</td>
+<td><code>( component0, component1, …​ )</code></td>
+<td>everywhere</td>
+<td>conditional</td>
+<td>must have at least two components</td>
+</tr>
+<tr class="odd">
+<td>object</td>
+<td><code>{ fieldA; fieldB; …​ }</code></td>
+<td>everywhere</td>
+<td>conditional</td>
+<td>allowed to mention a subset of fields</td>
+</tr>
+<tr class="even">
+<td>field</td>
+<td><code>age</code>, <code>count = 0</code></td>
+<td>object</td>
+<td>conditional</td>
+<td><code>age</code> is short for <code>age = age</code></td>
+</tr>
+<tr class="odd">
+<td>variant</td>
+<td><code>#celsius deg</code>, <code>#sunday</code></td>
+<td>everywhere</td>
+<td>yes</td>
+<td><code>#sunday</code> is short form for <code>#sunday ()</code></td>
+</tr>
+<tr class="even">
+<td>alternative (<code>or</code>-pattern)</td>
+<td><code>0 or 1</code></td>
+<td>everywhere</td>
+<td>depends</td>
+<td>no alternative may bind an identifier</td>
+</tr>
+</tbody>
+</table>
+<p>このテーブルはパターンマッチングの種々の方法をまとめたものです。</p>
+<h2 id="パターンに関する追加情報">パターンに関する追加情報</h2>
+<p>パターンマッチングには豊富な歴史と興味深い仕組みがあるため、いくつかの補足説明をさせていただきます。</p>
+<p>用語<br />
+マッチングされる（通常は構造化された）式はしばしば
+<em>被検査体</em>（scrutinee;
+パターンマッチングされる対象）と呼ばれ、<code>case</code>
+キーワードの後ろに現れるパターンは
+<em>選択肢</em>（alternative）と呼ばれます。すべての可能な被検査体が（少なくとも一つの）選択肢とマッチするとき、被検査体は
+<em>カバーされている</em>
+と言います。パターンはトップダウン方式で試行されるので、パターンが重複している場合は上位のものが選択されます。ある選択肢にマッチするすべての値に対して上位の選択肢がある場合、その選択肢は
+<em>無効</em>（dead）（または
+<em>非アクティブ</em>）とみなされます。</p>
+<p>ブーリアン<br />
+データ型 <code>Bool</code> は 2 つに分離された選択肢（<code>true</code>
+と <code>false</code> ）とみなすことができ、Motoko の組み込み
+<code>if</code> 構造体がデータを <em>排除</em> して <em>制御</em>
+フローに変換します。<code>if</code>
+式はパターンマッチングの一種で、一般的な <code>switch</code>
+式をブーリアン被検査体という特殊なケースに対して省略して書けるようにしたものです。</p>
+<p>バリアントパターン<br />
+Motoko のバリアント型は <em>非交和</em> （disjoint union）
+の一種です（<em>直和型</em> （sum
+type）とも呼ばれることがあります）。バリアント型の値は常にただ 1 つの
+<em>判別器</em>（discriminator）と、判別器ごとに異なる可能性のあるペイロードを持っています。バリアントパターンとバリアント値をマッチングするとき、判別器は（選択肢を選ぶために）同じでなければならず、そうであればペイロードはさらなるマッチングのために公開されます。</p>
+<p>列挙型<br />
+他のプログラミング言語はしばしば列挙を表すために <code>enum</code>
+というキーワードを使用します（例えば C 言語はそうですが、 Motoko
+はそうではありません）。これらは選択肢がペイロードを持つことができないため、Motoko
+のバリアント型の貧弱な親戚のようなものです。同様に、これらの言語では
+<code>switch</code>
+のような文はパターンマッチングの一部の機能を持っていません。Motoko
+にはペイロードを必要としない基本的な列挙型を定義するためのショートハンド構文（例:
+<code>type Weekday = { #mon; #tue; …​ }</code>）があります。</p>
+<p>エラー処理<br />
+エラー処理は、パターンマッチングのユースケースの一つと考えることができます。関数が成功時の選択肢と失敗時の選択肢を持つ値を返す場合（例えば
+Option 値やバリアント）、<a href="errors.md">エラー処理</a>
+で説明したように、パターンマッチングを使ってその 2
+つを判別することができます。</p>
+<p>論駁不可能（irrefutable）なマッチング<br />
+単一の値だけを含むような型があります。私たちはこれを
+<em>シングルトン</em>
+型と呼んでいます。これらの例としては、ユニット型（空のタプル）やシングルトン型のタプルがあります。タグが
+1
+つでペイロードがない（またはシングルトン型である）バリアントも同様にシングルトン型です。シングルトン型に対するパターンマッチングは、成功するという
+1 つの結果しか得られないため、特に簡単です。</p>
+<p>網羅性（カバレッジ）チェック<br />
+パターンチェックの選択肢が失敗する可能性がある場合、<code>switch</code>
+式全体が失敗する可能性があるかどうかを調べることが重要になります。もし式全体が失敗すると、プログラムの実行が特定の入力に対してトラップされる可能性があり、運用上の脅威となります。このため、コンパイラは被検査体がカバーされている形状（shape）かを追跡することで、パターンマッチングの網羅性をチェックします。コンパイラはカバーされていない被検査体に対して警告を発します（Motoko
+はマッチしない被検査体の有用な例も構築します）。網羅性チェックの便利な副産物は、決してマッチしない無効（dead）の選択肢を特定して警告することです。</p>
+<p>まとめると、パターンチェックはいくつかのユースケースを持つ優れたツールです。パターンを静的に解析することで、コンパイラは未処理のケースや到達不可能なコードを指摘し、プログラマを支援します。これらはどちらもプログラマのエラーを示すことが多いです。カバレッジチェックは静的でコンパイル時に行われるため、ランタイムにおける失敗を確実に排除することができます。</p>
+<!--
+
+# Pattern matching
+
+Pattern matching is a language feature that makes it easy to both test and decompose structured data into its constituent parts. While most programming languages provide familiar ways to build structured data, pattern matching enables you to take apart structured data and bring its fragments into scope by binding them to the names you specify. Syntactically, the patterns resemble the construction of structured data, but generally appear in input-direction positions, such as in function argument positions, after the `case` keyword in `switch` expressions, and after `let` or `var` declarations.
+
+Consider the following function call:
+
+``` motoko include=fullname
+let name : Text = fullName({ first = "Jane"; mid = "M"; last = "Doe" });
+```
+
+This code constructs a record with three fields and passes it to the function `fullName`. The result of the call is named and brought into scope by binding it to the identifier `name`. The last, binding step is called pattern matching, and `name : Text` is one of the simplest forms of pattern. For instance, in the following implementation of the callee:
+
+``` motoko name=fullname
+func fullName({ first : Text; mid : Text; last : Text }) : Text {
+  first # " " # mid # " " # last
+};
+```
+
+The input is an (anonymous) object, which is destructured into its three `Text` fields, whose values are bound to the identifiers `first`, `mid` and `last`. They can be freely used in the block that forms the body of the function. Above we have resorted to *name punning* (a form of aliasing) for object field patterns, using the name of a field to also name its contents. A more general form of field pattern allows the content to be named separately from the field, as in `…​; mid = m : Text; …​`. Here `mid` determines which field to match, and `m` names the content of that field within the scope of the pattern.
+
+You can also use pattern matching to declare *literal patterns*, which look just like literal constants. Literal patterns are especially useful in `switch` expressions because they can cause the current pattern match to *fail*, and thus start to match the next pattern. For example:
+
+``` motoko
+switch ("Adrienne", #female) {
+  case (name, #female) { name # " is a girl!" };
+  case (name, #male) { name # " is a boy!" };
+  case (name, _) { name # ", is a human!" };
+}
+```
+
+1.  will match the first `case` clause (because binding to the identifier `name` cannot fail and the shorthand variant literal `#Female` compares as equal), and evaluate to `"Adrienne is a girl!"`. The last clause showcases the *wildcard* pattern `_`. It cannot fail, but won’t bind any identifier.
+
+The last kind of pattern is the `or` pattern. As its name suggests, these are two or more patterns that are separated by the keyword `or`. Each of the sub-patterns must bind to the same set of identifiers, and is matched from left-to-right. An `or` pattern fails when its rightmost sub-pattern fails.
+
+| pattern kind               | example(s)                      | context    | can fail                              | remarks                                  |
+|----------------------------|---------------------------------|------------|---------------------------------------|------------------------------------------|
+| literal                    | `null`, `42`, `()`, `"Hi"`      | everywhere | when the type has more than one value |                                          |
+| named                      | `age`, `x`                      | everywhere | no                                    | introduces identifiers into a new scope  |
+| wildcard                   | `_`                             | everywhere | no                                    |                                          |
+| typed                      | `age : Nat`                     | everywhere | conditional                           |                                          |
+| option                     | `?0`, `?val`                    | everywhere | yes                                   |                                          |
+| tuple                      | `( component0, component1, …​ )` | everywhere | conditional                           | must have at least two components        |
+| object                     | `{ fieldA; fieldB; …​ }`         | everywhere | conditional                           | allowed to mention a subset of fields    |
+| field                      | `age`, `count = 0`              | object     | conditional                           | `age` is short for `age = age`           |
+| variant                    | `#celsius deg`, `#sunday`       | everywhere | yes                                   | `#sunday` is short form for `#sunday ()` |
+| alternative (`or`-pattern) | `0 or 1`                        | everywhere | depends                               | no alternative may bind an identifier    |
+
+The following table summarises the different ways of pattern matching.
+
+## Additional information about about patterns
+
+Since pattern matching has a rich history and interesting mechanics, a few additional comments are justified.
+
+terminology
+The (usually structured) expression that is being matched is frequently called the *scrutinee* and the patterns appearing behind the keyword `case` are the *alternatives*. When every possible scrutinee is matched by (at least one) alternative, then we say that the scrutinee is *covered*. The patterns are tried in top-down fashion and thus in case of *overlapping* patterns the one higher-up is selected. An alternative is considered *dead* (or *inactive*), if for every value that it matches there is higher-up alternative that is also matched.
+
+booleans
+The data type `Bool` can be regarded as two disjointed altenatives (`true` and `false`) and Motoko’s built-in `if` construct will *eliminate* the data and turn it into *control* flow. `if` expressions are a form of pattern matching that abbreviates the general `switch` expression for the special case of boolean scrutinees.
+
+variant patterns
+Motoko’s variant types are a form of *disjoint union* (sometimes also called a *sum type*). A value of variant type always has exactly one *discriminator* and a payload which can vary from discriminator to discriminator. When matching a variant pattern with a variant value, the discriminators must be the same (in order to select the alternative) and if so, the payload gets exposed for further matching.
+
+enumerated types
+Other programming languages — for example C, but not Motoko — often use a keyword `enum` to introduce enumerations. These are impoverished relatives of Motoko’s variant types, as the alternatives are not allowed to carry any payload. Correspondingly, in those languages the `switch`-like statements lack the full power of pattern matching. Motoko provides the short-hand syntax (as in `type Weekday = { #mon; #tue; …​ }`) to define basic enumerations, for which no payloads are required.
+
+error handling
+Error handling can be considered a use-case for pattern matching. When a function returns a value that has an alternative for success and one for failure (for example, an option value or a variant), pattern matching can be used to distinguish between the two as discussed in [Error handling](errors.md).
+
+irrefutable matching
+Some types contain just a single value. We call these *singleton types*. Examples of these are the unit type (also known as an empty tuple) or tuples of singleton types. Variants with a single tag and no (or singleton-typed) payload are singleton types too. Pattern matching on singleton types is particularly straightforward, as it only has one possible outcome: a successful match.
+
+exhaustiveness (coverage) checking
+When a pattern check alternative has the potential to fail, then it becomes important to find out whether the whole `switch` expression can fail. If this can happen the execution of the program can trap for certain inputs, posing an operational threat. To this end, the compiler checks for the exhaustiveness of pattern matching by keeping track of the covered shape of the scrutinee. The compiler issues a warning for any non-covered scrutinees (Motoko even constructs a helpful example of a scrutinee that is not matched). A useful by-product of the exhaustiveness check is that it identifies and warns about dead alternatives that can never be matched.
+
+In summary, pattern checking is a great tool with several use-cases. By statically analyzing patterns, the compiler assists the programmer by pointing out unhandled cases and unreachable code, both of which often indicate programmer error. The static, compile-time nature of coverage checking reliably rules out runtime failures.
+
+-->
+</body>
+</html>

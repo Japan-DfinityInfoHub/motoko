@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>md/control-flow.md</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">md/control-flow.md</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#命令的な制御フロー">命令的な制御フロー</a>
+<ul>
+<li><a href="#関数からの早期-return">関数からの早期
+<code>return</code></a></li>
+<li><a href="#ループとラベル">ループとラベル</a>
+<ul>
+<li><a href="#ラベル付けされた式">ラベル付けされた式</a></li>
+</ul></li>
+<li><a href="#option-ブロックと-null-値ブレーク">Option ブロックと null
+値ブレーク</a></li>
+<li><a href="#loop-を使った反復処理"><code>loop</code>
+を使った反復処理</a></li>
+<li><a href="#前提条件付きの-while-ループ">前提条件付きの
+<code>while</code> ループ</a></li>
+<li><a href="#イテレーションのための-for-ループ">イテレーションのための
+<code>for</code> ループ</a></li>
+<li><a href="#for-ループにおける-range-の使用"><code>for</code>
+ループにおける <code>range</code> の使用</a></li>
+<li><a href="#revrange-を使う"><code>revRange</code> を使う</a></li>
+<li><a
+href="#特定のデータ構造のイテレータを使用する">特定のデータ構造のイテレータを使用する</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="命令的な制御フロー">命令的な制御フロー</h1>
+<p>制御フローには 2 つの重要なカテゴリーがあります。</p>
+<ul>
+<li><p><code>if</code> や <code>switch</code>
+式のように、ある値の構造が、制御や次に評価する式の選択を促すとき、<em>宣言的</em>
+制御フローと呼ばれます。</p></li>
+<li><p>プログラマの命令に応じて制御が突然変更され、通常の制御フローを放棄するような場合、<em>命令的</em>
+制御フローと呼ばれます。例としては、<code>break</code> や
+<code>continue</code>、<code>return</code> や <code>throw</code>
+があります。</p></li>
+</ul>
+<p>命令的な制御フローは、ステート変化やエラー処理や入出力などの副作用と密接に関係していることが多いです。</p>
+<h2 id="関数からの早期-return">関数からの早期 <code>return</code></h2>
+<p>通常、関数から返す値は関数本体の全体を評価した結果の値です。しかしながら、時には関数本体の評価の終了前に結果が得られることがあります。このような状況では、<code>return ⟨式⟩</code>
+構文を使用し、残りの計算を放棄して結果を持って直ちに関数を終了することができます。
+<code>throw</code> の使用が許可されている場合には、関数本体で
+<code>throw</code>
+を使用することで、エラーが発生したときに計算を放棄することができます。</p>
+<p>関数の結果がユニット型の場合、<code>return ()</code>
+の代わりに、短縮形の <code>return</code> を使用することができます。</p>
+<h2 id="ループとラベル">ループとラベル</h2>
+<p>Motoko では、以下のような数種類の繰り返し構造が用意されています。</p>
+<ul>
+<li><p>構造化されたデータのメンバを反復処理するための <code>for</code>
+式。</p></li>
+<li><p>プログラムによる繰り返しのための <code>loop</code>
+式（オプションで終了条件を与える）。</p></li>
+<li><p>プログラムによる繰り返しのための <code>while</code>
+ループ（入口に条件式を与える）。</p></li>
+</ul>
+<p>これらはいずれも、ループにシンボリックな名前を付けるために、<code>label ⟨ラベル名⟩</code>
+という修飾子を前に付けることができます。名前付きループは、ループの入口に戻って処理を継続したり（continue）、ループ処理を中断（break）するように命令的に制御フローを変更するのに便利です。</p>
+<ul>
+<li><p><code>continue ⟨ラベル名⟩</code>
+を使ってループの入口に戻るか、</p></li>
+<li><p><code>break ⟨ラベル名⟩</code> を使ってループから抜ける</p></li>
+</ul>
+<p>以下の例では、<code>for</code>
+式はあるテキストの文字列に対してループし、文字が感嘆符の場合にすぐにイタレーションを破棄します。</p>
+<pre class="motoko"><code>import Debug &quot;mo:base/Debug&quot;;
+label letters for (c in &quot;ran!!dom&quot;.chars()) {
+  Debug.print(debug_show(c));
+  if (c == &#39;!&#39;) { break letters };
+  // ...
+}</code></pre>
+<h3 id="ラベル付けされた式">ラベル付けされた式</h3>
+<p><code>label</code> には他にも 2
+つの側面があり、あまり主流ではありませんが、ある特定の状況では便利です。</p>
+<ul>
+<li><p><code>label</code> は型付け可能です。</p></li>
+<li><p>（ループに限らず）<em>いかなる</em> 式にも label
+を前に付けることで名前を付けることができます。<code>break</code>
+を指定すると、式の結果に即座に値を与えて、式の評価を短絡させることができます。（これは
+<code>return</code>
+を使って関数を早期に終了させるのと似ていますが、関数を宣言して呼び出すというオーバーヘッドがありません。）</p></li>
+</ul>
+<p>型注釈されたラベルの構文は、<code>label ⟨ラベル名⟩ : ⟨型⟩ ⟨式⟩</code>
+となります。任意の式を <code>break ⟨ラベル名⟩ ⟨別の式⟩</code>
+構造を使って終了し、 <code>⟨別の式⟩</code> の値を返して
+<code>⟨式⟩</code> の評価を短絡させることができます。</p>
+<p>これらの構造をうまく使うことで、プログラマは主要なプログラムロジックに集中しつつ、<code>break</code>
+を使って例外的なケースを処理することができます。</p>
+<pre class="motoko"><code>import Text &quot;mo:base/Text&quot;;
+import Iter &quot;mo:base/Iter&quot;;
+
+type Host = Text;
+let formInput = &quot;us@dfn&quot;;
+
+let address = label exit : ?(Text, Host) {
+  let splitted = Text.split(formInput, #char &#39;@&#39;);
+  let array = Iter.toArray&lt;Text&gt;(splitted);
+  if (array.size() != 2) { break exit(null) };
+  let account = array[0];
+  let host = array[1];
+  // if (not (parseHost(host))) { break exit(null) };
+  ?(account, host)
+}</code></pre>
+<p>当然ながら、ラベル付けされた普通の（ループではない）式では
+<code>continue</code> は使えません。型付けに関しては、<code>⟨式⟩</code>
+と <code>⟨別の式⟩</code> の両方の型がラベルが宣言した <code>⟨型⟩</code>
+と一致する必要があります。ラベルに <code>⟨ラベル名⟩</code>
+だけが与えられている場合、そのデフォルトの <code>⟨型⟩</code>
+はユニット型 (<code>()</code>)
+になっています。同様に、<code>⟨別の式⟩</code> のない <code>break</code>
+は unit (<code>()</code>) という値の略記となります。</p>
+<h2 id="option-ブロックと-null-値ブレーク">Option ブロックと null
+値ブレーク</h2>
+<p>他の多くの高級言語と同様に、Motoko では <code>null</code>
+値を使用することができ、<code>?T</code> 形式の Option 型を使って
+<code>null</code> 値が発生する可能性を追跡できます。 これは、可能な限り
+<code>null</code> 値を使用しないようにすることと、必要なときに
+<code>null</code>
+値である可能性を考慮することの両方を目的としています。</p>
+<p>もし <code>null</code> 値をテストする唯一の方法が冗長な
+<code>switch</code> 式なら後者は面倒だったかもしれませんが、Motoko では
+<em>Option ブロック</em> や <em>null 値ブレーク</em>
+といった専用の構文で Option 型の取り扱いを簡単化しています。</p>
+<p>Option ブロック <code>do ? &lt;ブロック&gt;</code>
+は、<code>&lt;ブロック&gt;</code> が <code>T</code> 型であるときに
+<code>?T</code> 型の値を生成します。<code>&lt;ブロック&gt;</code>
+からブレークされる可能性があることが重要です。
+<code>&lt;ブロック&gt;</code> の中で、null ブレーク
+<code>&lt;式&gt; !</code> は、無関係な Option 型 <code>?U</code> の
+<code>&lt;式&gt;</code> の結果が <code>null</code>
+であるかどうかをテストします。 もし <code>&lt;式&gt;</code> の結果が
+<code>null</code> ならば、制御は直ちに
+<code>do ? &lt;ブロック&gt;</code> を終了し、その値は <code>null</code>
+となります。 結果が <code>null</code>
+でなければ、<code>&lt;式&gt;</code> の結果は Option 値 <code>?v</code>
+でなければならず、<code>&lt;式&gt; !</code> の評価はその内容である
+<code>v</code> (<code>U</code> 型) で進められます。</p>
+<p>実際の例として、自然数、除算、ゼロかどうかのテストからなる数値式
+<code>Exp</code> を評価する簡単な関数 <code>eval</code>
+を定義し、バリアント型としてエンコードしたものを以下に示します。</p>
+<pre class="motoko"><code></code></pre>
+<p><code>0</code>
+による除算をトラップせずに防ぐために、<code>eval</code> 関数は失敗を示す
+<code>null</code> を使用して Option 型の結果を返します。</p>
+<p>それぞれの再帰呼び出しは <code>!</code> を使って <code>null</code>
+かどうかをチェックし、結果が <code>null</code> の場合は直ちに外側の
+<code>do ? block</code> と関数そのものを <code>null</code>
+値を持って終了します。</p>
+<p>（ Option
+ブロックの簡潔さを理解する演習として、ラベル付きの式を使用して
+<code>eval</code> を書き換えて、null 値ブレークごとに明示的に switch
+式を入れてみるとよいでしょう。）</p>
+<h2 id="loop-を使った反復処理"><code>loop</code> を使った反復処理</h2>
+<p>一連の命令式を無限に繰り返す最も簡単な方法は、<code>loop</code>
+構造を使うことです。</p>
+<pre class="motoko"><code>loop { &lt;expr1&gt;; &lt;expr2&gt;; ... }</code></pre>
+<p>ループを抜けるには、<code>return</code> または <code>break</code>
+構造を使用します。</p>
+<p>ループを条件付きで繰り返すために、<code>loop ⟨本体⟩ while ⟨条件⟩</code>
+という再投入条件を付けることができます。</p>
+<p>このようなループの本体は、常に少なくとも一度は実行されます。</p>
+<h2 id="前提条件付きの-while-ループ">前提条件付きの <code>while</code>
+ループ</h2>
+<p>ループの最初の実行を防ぐために、入力条件が必要な場合があります。このようなループ処理のために、
+<code>while ⟨条件⟩ ⟨本体⟩</code> 式が利用可能です。</p>
+<pre class="motoko"><code>while (earned &lt; need) { earned += earn() };</code></pre>
+<p><code>loop</code> とは異なり、<code>while</code>
+ループの本体は一度も実行されない可能性があります。</p>
+<h2 id="イテレーションのための-for-ループ">イテレーションのための
+<code>for</code> ループ</h2>
+<p>ある同種のコレクションの要素に対する反復は、<code>for</code>
+ループを使って行うことができます。値はイテレータから引き出され、順番にループパターンに束縛されます。</p>
+<pre class="motoko"><code>let carsInStock = [
+  (&quot;Buick&quot;, 2020, 23.000),
+  (&quot;Toyota&quot;, 2019, 17.500),
+  (&quot;Audi&quot;, 2020, 34.900)
+];
+var inventory : { var value : Float } = { var value = 0.0 };
+for ((model, year, price) in carsInStock.vals()) {
+  inventory.value += price;
+};
+inventory</code></pre>
+<h2 id="for-ループにおける-range-の使用"><code>for</code> ループにおける
+<code>range</code> の使用</h2>
+<p><code>range</code>
+関数は、与えられた下限値と上限値を持つ（<code>Iter&lt;Nat&gt;</code>
+型の）イテレータを生成します。</p>
+<p>次のループの例では、<em>11</em> 回の反復処理で <code>0</code> から
+<code>10</code> までの数字を表示します。</p>
+<pre class="motoko"><code>import Iter &quot;mo:base/Iter&quot;;
+import Debug &quot;mo:base/Debug&quot;;
+var i = 0;
+for (j in Iter.range(0, 10)) {
+  Debug.print(debug_show(j));
+  assert(j == i);
+  i += 1;
+};
+assert(i == 11);</code></pre>
+<p>より一般的には、<code>range</code>
+関数は自然数列に対するイテレータを生成する <code>class</code>
+です。それぞれのイテレータは <code>Iter&lt;Nat&gt;</code>
+型となります。</p>
+<p>コンストラクタ関数として、<code>range</code>
+は以下の関数型を持ちます。</p>
+<pre class="motoko"><code>(lower : Nat, upper : Int) -&gt; Iter&lt;Nat&gt;</code></pre>
+<p>ここで <code>Iter&lt;Nat&gt;</code> は <code>next</code>
+メソッドを持つイテレータオブジェクト型であり、それぞれ <code>?Nat</code>
+型の Option 要素を生成します。</p>
+<pre class="motoko"><code>type Iter&lt;A&gt; = {next : () -&gt; ?A};</code></pre>
+<p>各呼び出しに対して、<code>next</code> は（<code>?Nat</code>
+型の）Option 要素を返します。</p>
+<p><code>null</code>
+値は、反復処理のシーケンスが終了したことを示します。</p>
+<p><code>null</code> に達するまで、ある数 <em>n</em> の
+<code>?</code><em>n</em>の形式の非 <code>null</code>
+値には、繰り返し処理における次の順番の要素が含まれます。</p>
+<h2 id="revrange-を使う"><code>revRange</code> を使う</h2>
+<p><code>range</code> と同様に、<code>revRange</code> 関数は（それぞれ
+<code>Iter&lt;Int&gt;</code> 型の）イテレータを生成する
+<code>class</code> です。
+コンストラクタ関数として、この関数は以下の関数型を持っています。</p>
+<pre class="motoko"><code>(upper : Int, lower : Int) -&gt; Iter&lt;Int&gt;</code></pre>
+<p><code>range</code> とは異なり、<code>revRange</code> 関数は、最初の
+<em>上限</em> 値から最後の <em>下限</em> 値まで、繰り返し計算の順序を
+<em>降順</em> にします。</p>
+<h2
+id="特定のデータ構造のイテレータを使用する">特定のデータ構造のイテレータを使用する</h2>
+<p>多くの組み込みデータ構造には、あらかじめイテレータが定義されています。以下の表は、それらの一覧です。</p>
+<table>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Name</th>
+<th>Iterator</th>
+<th>Elements</th>
+<th>Element type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>[T]</code></td>
+<td>array of <code>T</code>​s</td>
+<td><code>vals</code></td>
+<td>the array’s members</td>
+<td><code>T</code></td>
+</tr>
+<tr class="even">
+<td><code>[T]</code></td>
+<td>array of <code>T</code>​s</td>
+<td><code>keys</code></td>
+<td>the array’s valid indices</td>
+<td><code>Nat</code></td>
+</tr>
+<tr class="odd">
+<td><code>[var T]</code></td>
+<td>mutable array of <code>T</code>​s</td>
+<td><code>vals</code></td>
+<td>the array’s members</td>
+<td><code>T</code></td>
+</tr>
+<tr class="even">
+<td><code>[var T]</code></td>
+<td>mutable array of <code>T</code>​s</td>
+<td><code>keys</code></td>
+<td>the array’s valid indices</td>
+<td><code>Nat</code></td>
+</tr>
+<tr class="odd">
+<td><code>Text</code></td>
+<td>text</td>
+<td><code>chars</code></td>
+<td>the text’s characters</td>
+<td><code>Char</code></td>
+</tr>
+<tr class="even">
+<td><code>Blob</code></td>
+<td>blob</td>
+<td><code>vals</code></td>
+<td>the blob’s bytes</td>
+<td><code>Nat8</code></td>
+</tr>
+</tbody>
+</table>
+<p>データ構造のイテレータ</p>
+<p>ユーザー定義のデータ構造では、独自のイテレータを定義することができます。ある要素型
+<code>A</code> に対して <code>Iter&lt;A&gt;</code>
+型になっている限り、これらは組み込みのものと同じように振る舞い、通常の
+<code>for</code> ループで使用することができます。</p>
+<!--
+
+# Imperative control flow
+
+There are two key categories of control flow:
+
+-   *declarative*, when the structure of some value guides control and the selection of the next expression to evaluate, like in `if` and `switch` expressions;
+
+-   *imperative* where control changes abruptly according to a programmer’s command, abondoning regular control flow; examples are `break` and `continue`, but also `return` and `throw`.
+
+Imperative control flow often goes hand-in-hand with state changes and other flavors of side-effects, such as error handling and input/output.
+
+## Early `return` from `func`
+
+Normally, the result of a function is the value of its body. Sometimes, during evaluation of the body, the result is available before the end of evaluation. In such situations the `return <exp>` construct can be used to abandon the rest of the computation and immediately exit the function with a result. Similarly, where permitted, `throw` may be used to abandon a computation with an error.
+
+When a function has unit result type, the shorthand `return` may be used instead of the equivalent `return ()`.
+
+## Loops and labels
+
+Motoko provides several kinds of repetition constructs, including:
+
+-   `for` expressions for iterating over members of structured data.
+
+-   `loop` expressions for programmatic repetition (optionally with termination condition).
+
+-   `while` loops for programmatic repetition with entry condition.
+
+Any of these can be prefixed with a `label <name>` qualifier to give the loop a symbolic name. Named loops are useful for imperatively changing control flow to continue from the entry or exit of the named loop.
+
+-   re-entering the loop with `continue <name>`, or
+
+-   exiting the loop altogether with `break <name>`.
+
+In the following example, the `for` expression loops over characters of some text and abandons iteration as soon as an exclamation sign is encountered.
+
+``` motoko
+import Debug "mo:base/Debug";
+label letters for (c in "ran!!dom".chars()) {
+  Debug.print(debug_show(c));
+  if (c == '!') { break letters };
+  // ...
+}
+```
+
+### Labeled expressions
+
+There are two other facets to `label`​s that are less mainstream, but come in handy in certain situations:
+
+-   `label`​s can be typed
+
+-   *any* expression (not just loops) can be named by prefixing it with a label; `break` allows one to short-circuit the expression’s evaluation by providing an immediate value for its result. (This is similar to exiting a function early using `return`, but without the overhead of declaring and calling a function.)
+
+The syntax for type-annotated labels is `label <name> : <type> <expr>`, signifying that any expression can be exited using a `break <name> <alt-expr>` construct that returns the value of `<alt-expr>` as the value of `<expr>`, short-circuiting evaluation of `<expr>`.
+
+Judicious use of these constructs allows the programmer to focus on the primary program logic and handle exceptional case via `break`
+
+``` motoko
+import Text "mo:base/Text";
+import Iter "mo:base/Iter";
+
+type Host = Text;
+let formInput = "us@dfn";
+
+let address = label exit : ?(Text, Host) {
+  let splitted = Text.split(formInput, #char '@');
+  let array = Iter.toArray<Text>(splitted);
+  if (array.size() != 2) { break exit(null) };
+  let account = array[0];
+  let host = array[1];
+  // if (not (parseHost(host))) { break exit(null) };
+  ?(account, host)
+}
+```
+
+Naturally, labeled common expressions don’t allow `continue`. In terms of typing, both `<expr>` and `<alt-expr>`​'s types must conform with the label’s declared `<type>`. If a label is only given a `<name>`, then its `<type>` defaults to unit (`()`). Similarly a `break` without an `<alt-expr>` is shorthand for the value unit (`()`).
+
+## Option blocks and null breaks
+
+Like many other high-level languages, Motoko lets you opt in to `null` values, tracking possible occurences of `null` values using option types of the form `?T`. This is to both to encourage you to avoid using `null` values when possible, and to consider the possibility of `null` values when necessary.
+
+The latter could be cumbersome, if the only way to test a value for `null` were with a verbose `switch` expression, but Motoko simplifies the handling of option types with some dedicated syntax: *option blocks* and *null breaks*.
+
+The option block, `do ? <block>`, produces a value of type `?T`, when block `<block>` has type `T` and, importantly, introduces the possibility of a break from `<block>`. Within a `do ? <block>`, the null break `<exp> !`, tests whether the result of the expression, `<exp>`, of unrelated option type, `?U`, is `null`. If the result `<exp>` is `null`, control immediately exits the `do ? <block>` with value `null`. Otherwise, the result of `<exp>` must be an option value `?v`, and evaluation of `<exp> !` proceeds with its contents, `v` (of type `U`).
+
+As realistic example, we give the definition of a simple function `eval`uating numeric `Exp`ressions built from natural numbers, division and a zero test, encoded as a variant type:
+
+-->
+
+<!--
+TODO: make interactive
+-->
+
+<!--
+
+``` motoko file=./examples/option-block.mo
+```
+
+To guard against division by `0` without trapping, the `eval` function returns an option result, using `null` to indicate failure.
+
+Each recursive call is checked for `null` using `!`, immediately exiting the outer `do ? block`, and thus the function itself, with `null`, when a result is `null`.
+
+(As an exercise that illustrates the concision of option blocks, you might want to try rewriting `eval` using a labeled expression and explicit switches for each null break.)
+
+## Repetition with `loop`
+
+The simplest way to indefinitely repeat a sequence of imperative expressions is by using a `loop` construct
+
+``` motoko no-repl
+loop { <expr1>; <expr2>; ... }
+```
+
+The loop can only be abandoned with a `return` or `break` construct.
+
+A re-entry condition can be affixed to allow a conditional repetition of the loop with `loop <body> while <cond>`.
+
+The body of such a loop is always executed at least once.
+
+## `while` loops with precondition
+
+Sometimes an entry condition is needed to guard the first execution of a loop. For this kind of repetition the `while <cond> <body>`-flavor is available
+
+``` motoko no-repl
+while (earned < need) { earned += earn() };
+```
+
+Unlike a `loop`, the body of a `while` loop may never be executed.
+
+## `for` loops for iteration
+
+An iteration over elements of some homogeneous collection can be performed using a `for` loop. The values are drawn from an iterator and bound to the loop pattern in turn.
+
+``` motoko
+let carsInStock = [
+  ("Buick", 2020, 23.000),
+  ("Toyota", 2019, 17.500),
+  ("Audi", 2020, 34.900)
+];
+var inventory : { var value : Float } = { var value = 0.0 };
+for ((model, year, price) in carsInStock.vals()) {
+  inventory.value += price;
+};
+inventory
+```
+
+## Using `range` with a `for` loop
+
+The `range` function produces an iterator (of type `Iter<Nat>`) with the given lower and upper bound, inclusive.
+
+The following loop example prints the numbers `0` through `10` over its *eleven* iterations:
+
+``` motoko
+import Iter "mo:base/Iter";
+import Debug "mo:base/Debug";
+var i = 0;
+for (j in Iter.range(0, 10)) {
+  Debug.print(debug_show(j));
+  assert(j == i);
+  i += 1;
+};
+assert(i == 11);
+```
+
+More generally, the function `range` is a `class` that constructs iterators over sequences of natural numbers. Each such iterator has type `Iter<Nat>`.
+
+As a constructor function, `range` has a function type:
+
+``` motoko no-repl
+(lower : Nat, upper : Int) -> Iter<Nat>
+```
+
+Where `Iter<Nat>` is an iterator object type with a `next` method that produces optional elements, each of type `?Nat`:
+
+``` motoko no-repl
+type Iter<A> = {next : () -> ?A};
+```
+
+For each invocation, `next` returns an optional element (of type `?Nat`).
+
+The value `null` indicates that the iteration sequence has terminated.
+
+Until reaching `null`, each non-`null` value, of the form `?`*n* for some number *n*, contains the next successive element in the iteration sequence.
+
+## Using `revRange`
+
+Like `range`, the function `revRange` is a `class` that constructs iterators (each of type `Iter<Int>`). As a constructor function, it has a function type:
+
+``` motoko no-repl
+(upper : Int, lower : Int) -> Iter<Int>
+```
+
+Unlike `range`, the `revRange` function *descends* in its iteration sequence, from an initial *upper* bound to a final *lower* bound.
+
+## Using iterators of specific data structures
+
+Many built-in data structures come with pre-defined iterators. Below table lists them
+
+| Type      | Name                  | Iterator | Elements                  | Element type |
+|-----------|-----------------------|----------|---------------------------|--------------|
+| `[T]`     | array of `T`​s         | `vals`   | the array’s members       | `T`          |
+| `[T]`     | array of `T`​s         | `keys`   | the array’s valid indices | `Nat`        |
+| `[var T]` | mutable array of `T`​s | `vals`   | the array’s members       | `T`          |
+| `[var T]` | mutable array of `T`​s | `keys`   | the array’s valid indices | `Nat`        |
+| `Text`    | text                  | `chars`  | the text’s characters     | `Char`       |
+| `Blob`    | blob                  | `vals`   | the blob’s bytes          | `Nat8`       |
+
+Iterators for data structures
+
+User-defined data structures can define their own iterators. As long they conform with the `Iter<A>` type for some element type `A`, these behave like the built-in ones and can be consumed with ordinary `for`-loops.
+
+-->
+</body>
+</html>
